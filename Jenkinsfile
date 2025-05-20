@@ -1,5 +1,9 @@
 pipeline {
-  agent any
+  agent {
+    docker {
+      image 'node:22-slim'
+    }
+  }
 
   environment {
     DOCKER_COMPOSE_FILE = 'docker-compose.yml'
