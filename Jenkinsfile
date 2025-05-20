@@ -54,7 +54,7 @@ pipeline {
   post {
     success {
       echo '✅ CI/CD Pipeline completed successfully'
-    },
+    }
     failure {
       echo '❌ Pipeline failed. Check logs for details'
     }
