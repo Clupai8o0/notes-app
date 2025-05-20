@@ -16,7 +16,7 @@ app.get("/", (req: Request, res: Response) => {
 
 //! Test ping route
 app.get("/ping", (req: Request, res: Response) => {
-  res.send("Ping!");
+  res.status(200).send("Ping!");
 });
 
 // running the application
