@@ -3,7 +3,7 @@ import type { NextConfig } from "next"
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  output: process.env.NODE_ENV === 'production' ? 'standalone' : undefined,
+  // output: process.env.NODE_ENV === 'production' ? 'standalone' : undefined,
   webpack: (config) => {
     config.watchOptions = {
       poll: 1000,

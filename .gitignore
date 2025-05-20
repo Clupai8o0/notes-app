@@ -10,4 +10,4 @@
 /server/node_modules
 /server/.env*
 
-chat-app.pem
+*.pem
