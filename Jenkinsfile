@@ -14,7 +14,7 @@ pipeline {
   stages {
     stage('Checkout Code') {
       steps {
-        git 'https://github.com/Clupai8o0/notes-app.git'
+        git branch: 'main', url:  'https://github.com/Clupai8o0/notes-app.git'
       }
     }
 
