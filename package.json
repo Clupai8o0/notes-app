@@ -1,0 +1,13 @@
+{
+  "name": "notes-app",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix server\""
+  },
+  "author": "Clupai8o0",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
