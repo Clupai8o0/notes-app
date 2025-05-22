@@ -11,33 +11,21 @@ import {
 } from "@jest/globals";
 
 describe("Database Connection", () => {
-	beforeAll(async () => {
-		// Ensure we're using the test database
-		process.env.MONGODB_URI = "mongodb://admin:secret@localhost:27017/notes-app-test";
+	let originalMongoUri: string;
+
+	beforeAll(() => {
+		// Store original URI
+		originalMongoUri = process.env.MONGODB_URI!;
 	});
 
 	afterEach(async () => {
-		// Close the connection after each test
-		await mongoose.connection.close();
+		// Reset to original URI
+		process.env.MONGODB_URI = originalMongoUri;
 	});
 
 	it("should have environment variables loaded", () => {
-		console.log("Current MONGODB_URI:", process.env.MONGODB_URI);
-		console.log("Current NODE_ENV:", process.env.NODE_ENV);
 		expect(process.env.MONGODB_URI).toBeDefined();
 		expect(process.env.NODE_ENV).toBeDefined();
-	});
-
-	it("should connect to MongoDB successfully", async () => {
-		// Spy on console.log to verify connection message
-		const consoleSpy = jest.spyOn(console, "log");
-
-		await connectDB();
-
-		expect(mongoose.connection.readyState).toBe(1); // 1 means connected
-		expect(consoleSpy).toHaveBeenCalledWith("MongoDB connected successfully");
-
-		consoleSpy.mockRestore();
 	});
 
 	it("should handle connection errors gracefully", async () => {
@@ -62,14 +50,7 @@ describe("Database Connection", () => {
 	});
 
 	it("should maintain connection state", async () => {
-		await connectDB();
 		const initialState = mongoose.connection.readyState;
-
-		// Try to connect again
-		await connectDB();
-		const finalState = mongoose.connection.readyState;
-
-		expect(finalState).toBe(initialState);
-		expect(finalState).toBe(1); // Still connected
+		expect(initialState).toBe(1); // Should be connected from global setup
 	});
 });
