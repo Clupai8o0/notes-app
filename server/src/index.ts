@@ -1,8 +1,13 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
+import connectDB from './config/db';
+import authRoutes from './routes/authRoutes';
 
 // load envs
 dotenv.config();
+
+// Connect to MongoDB
+connectDB();
 
 const app = express();
 
@@ -10,6 +15,8 @@ const app = express();
 app.use(express.json());
 
 // Routes
+app.use('/api/auth', authRoutes);
+
 app.get("/", (req: Request, res: Response) => {
 	res.json({ msg: "Hello" });
 });

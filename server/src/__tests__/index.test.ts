@@ -1,5 +1,6 @@
 import request from 'supertest';
-import app from './index';
+import app from '../index';
+import { describe, it, expect } from '@jest/globals';
 
 describe('Server Endpoints', () => {
   // Test the root endpoint
