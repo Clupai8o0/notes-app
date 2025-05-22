@@ -26,6 +26,7 @@ describe("Auth Endpoints", () => {
 
 	afterAll(async () => {
 		// Clean up
+		await mongoose.connection.close();
 		await mongoose.disconnect();
 		await mongoServer.stop();
 	});

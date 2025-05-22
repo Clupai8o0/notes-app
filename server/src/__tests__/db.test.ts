@@ -26,12 +26,13 @@ describe("Database Connection", () => {
 		// Restore original NODE_ENV
 		process.env.NODE_ENV = originalNodeEnv;
 		// Clean up
+		await mongoose.connection.close();
 		await mongoose.disconnect();
 		await mongoServer.stop();
 	});
 
 	it("should connect to MongoDB successfully", async () => {
-		// Set NODE_ENV to development to see the connection message
+		// Set NODE_ENV to test to see the test connection message
 		process.env.NODE_ENV = 'test';
 		// Spy on console.log to verify connection message
 		const consoleSpy = jest.spyOn(console, "log");
