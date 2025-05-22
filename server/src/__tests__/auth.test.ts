@@ -1,9 +1,11 @@
 import request from "supertest";
 import mongoose from "mongoose";
+import { MongoMemoryServer } from "mongodb-memory-server";
 import app from "../index";
 import User from "../models/User";
+import connectDB from "../config/db";
 
-import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
+import { describe, it, expect, beforeAll, beforeEach, afterAll } from "@jest/globals";
 
 describe("Auth Endpoints", () => {
 	const testUser = {
@@ -13,15 +15,24 @@ describe("Auth Endpoints", () => {
 	};
 
 	let authToken: string;
+	let mongoServer: MongoMemoryServer;
 
 	beforeAll(async () => {
-		// Clear the users collection before tests
-		await User.deleteMany({});
+		// Create an in-memory MongoDB instance
+		mongoServer = await MongoMemoryServer.create();
+		// Connect to the in-memory database
+		await connectDB(mongoServer.getUri());
 	});
 
 	afterAll(async () => {
-		// Close the database connection after tests
-		await mongoose.connection.close();
+		// Clean up
+		await mongoose.disconnect();
+		await mongoServer.stop();
+	});
+
+	beforeEach(async () => {
+		// Clear the users collection before each test
+		await User.deleteMany({});
 	});
 
 	describe("POST /api/auth/register", () => {
@@ -36,6 +47,10 @@ describe("Auth Endpoints", () => {
 		});
 
 		it("should not register a user with existing email", async () => {
+			// First register
+			await request(app).post("/api/auth/register").send(testUser);
+			
+			// Try to register again
 			const res = await request(app).post("/api/auth/register").send(testUser);
 
 			expect(res.status).toBe(400);
@@ -44,6 +59,11 @@ describe("Auth Endpoints", () => {
 	});
 
 	describe("POST /api/auth/login", () => {
+		beforeEach(async () => {
+			// Register a user before login tests
+			await request(app).post("/api/auth/register").send(testUser);
+		});
+
 		it("should login with correct credentials", async () => {
 			const res = await request(app).post("/api/auth/login").send({
 				email: testUser.email,
@@ -68,6 +88,12 @@ describe("Auth Endpoints", () => {
 	});
 
 	describe("GET /api/auth/profile", () => {
+		beforeEach(async () => {
+			// Register and login before profile tests
+			const registerRes = await request(app).post("/api/auth/register").send(testUser);
+			authToken = registerRes.body.token;
+		});
+
 		it("should get user profile with valid token", async () => {
 			const res = await request(app)
 				.get("/api/auth/profile")
@@ -91,6 +117,12 @@ describe("Auth Endpoints", () => {
 	});
 
 	describe("DELETE /api/auth/delete", () => {
+		beforeEach(async () => {
+			// Register and login before delete tests
+			const registerRes = await request(app).post("/api/auth/register").send(testUser);
+			authToken = registerRes.body.token;
+		});
+
 		it("should delete user with valid token", async () => {
 			const res = await request(app)
 				.delete("/api/auth/delete")

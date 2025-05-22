@@ -2,25 +2,26 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-// Set test environment variables before any imports
+// Set test environment variables
 process.env.NODE_ENV = "test";
-// Keep the existing MONGODB_URI but change the database name to notes-test
-const originalUri = process.env.MONGODB_URI;
-if (originalUri) {
-	// Replace the database name in the URI with notes-test
-	process.env.MONGODB_URI = originalUri.replace(/\/([^/]+)$/, '/notes-test');
-}
 process.env.JWT_SECRET = "test-secret-key";
 
 import mongoose from "mongoose";
+import { MongoMemoryServer } from "mongodb-memory-server";
 import { beforeAll, afterAll } from "@jest/globals";
+
+let mongoServer: MongoMemoryServer;
 
 export {}
 
 beforeAll(async () => {
 	try {
-		// Connect to test database
-		await mongoose.connect(process.env.MONGODB_URI!);
+		// Create an in-memory MongoDB instance
+		mongoServer = await MongoMemoryServer.create();
+		const mongoUri = mongoServer.getUri();
+		
+		// Connect to the in-memory database
+		await mongoose.connect(mongoUri);
 		console.log("Test database connected successfully");
 	} catch (error) {
 		console.error("Test database connection error:", error);
@@ -37,6 +38,8 @@ afterAll(async () => {
 		// Close all connections
 		await Promise.all(mongoose.connections.map(conn => conn.close()));
 		await mongoose.disconnect();
+		// Stop the in-memory server
+		await mongoServer.stop();
 		console.log("Test database connection closed");
 	} catch (error) {
 		console.error("Error closing test database connection:", error);

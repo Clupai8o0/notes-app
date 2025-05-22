@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { MongoMemoryServer } from "mongodb-memory-server";
 import connectDB from "../config/db";
 
 import {
@@ -6,26 +7,43 @@ import {
 	it,
 	expect,
 	beforeAll,
-	afterEach,
+	afterAll,
 	jest,
 } from "@jest/globals";
 
 describe("Database Connection", () => {
-	let originalMongoUri: string;
+	let mongoServer: MongoMemoryServer;
+	let originalNodeEnv: string | undefined;
 
-	beforeAll(() => {
-		// Store original URI
-		originalMongoUri = process.env.MONGODB_URI!;
+	beforeAll(async () => {
+		// Store original NODE_ENV
+		originalNodeEnv = process.env.NODE_ENV;
+		// Create an in-memory MongoDB instance
+		mongoServer = await MongoMemoryServer.create();
 	});
 
-	afterEach(async () => {
-		// Reset to original URI
-		process.env.MONGODB_URI = originalMongoUri;
+	afterAll(async () => {
+		// Restore original NODE_ENV
+		process.env.NODE_ENV = originalNodeEnv;
+		// Clean up
+		await mongoose.disconnect();
+		await mongoServer.stop();
 	});
 
-	it("should have environment variables loaded", () => {
-		expect(process.env.MONGODB_URI).toBeDefined();
-		expect(process.env.NODE_ENV).toBeDefined();
+	it("should connect to MongoDB successfully", async () => {
+		// Set NODE_ENV to development to see the connection message
+		process.env.NODE_ENV = 'test';
+		// Spy on console.log to verify connection message
+		const consoleSpy = jest.spyOn(console, "log");
+
+		await connectDB(mongoServer.getUri());
+
+		expect(mongoose.connection.readyState).toBe(1); // 1 means connected
+		expect(consoleSpy).toHaveBeenCalledWith(
+			"Test database connected successfully"
+		);
+
+		consoleSpy.mockRestore();
 	});
 
 	it("should handle connection errors gracefully", async () => {
@@ -36,10 +54,8 @@ describe("Database Connection", () => {
 			.mockImplementation(() => undefined as never);
 
 		// Try to connect with invalid URI
-		process.env.MONGODB_URI = "mongodb://invalid:27017/test";
-
 		try {
-			await connectDB();
+			await connectDB("mongodb://invalid:27017/test");
 		} catch (error) {
 			expect(consoleSpy).toHaveBeenCalled();
 			expect(exitSpy).toHaveBeenCalledWith(1);
@@ -50,7 +66,15 @@ describe("Database Connection", () => {
 	});
 
 	it("should maintain connection state", async () => {
+		const uri = mongoServer.getUri();
+		await connectDB(uri);
 		const initialState = mongoose.connection.readyState;
-		expect(initialState).toBe(1); // Should be connected from global setup
+
+		// Try to connect again
+		await connectDB(uri);
+		const finalState = mongoose.connection.readyState;
+
+		expect(finalState).toBe(initialState);
+		expect(finalState).toBe(1); // Still connected
 	});
 });

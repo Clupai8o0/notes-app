@@ -4,10 +4,9 @@ import dotenv from "dotenv";
 // Load environment variables
 dotenv.config();
 
-// Validate environment variables on module import
-const MONGODB_URI = process.env.MONGODB_URI;
+const connectDB = async (uri?: string): Promise<void> => {
+	const MONGODB_URI = uri || process.env.MONGODB_URI;
 
-const connectDB = async (): Promise<void> => {
 	if (!MONGODB_URI) {
 		throw new Error("MongoDB URI not defined in environment variables");
 	}
@@ -19,8 +18,15 @@ const connectDB = async (): Promise<void> => {
 	
 	try {
 		await mongoose.connect(MONGODB_URI);
-		// Only log in non-test environment
-		if (process.env.NODE_ENV !== 'test') {
+		
+		// Log connection status based on environment
+		if (process.env.NODE_ENV === 'test') {
+			console.log("Test database connected successfully");
+		} else if (process.env.NODE_ENV === 'development') {
+			console.log("Development database connected successfully");
+		} else if (process.env.NODE_ENV === 'production') {
+			console.log("Production database connected successfully");
+		} else {
 			console.log("MongoDB connected successfully");
 		}
 	} catch (error) {
