@@ -49,7 +49,7 @@ pipeline {
 
     stage('Build Docker Images') {
       steps {
-        sh 'docker-compose -f $DOCKER_COMPOSE_FILE -f $DOCKER_COMPOSE_PROD_FILE build'
+        sh 'docker-compose build'
       }
     }
 
