@@ -1,9 +1,8 @@
 import request from "supertest";
 import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
 import app from "../index";
 import User from "../models/User";
-import connectDB from "../config/db";
+import { getMongoUri } from "./setup";
 
 import { describe, it, expect, beforeAll, beforeEach, afterAll } from "@jest/globals";
 
@@ -15,20 +14,12 @@ describe("Auth Endpoints", () => {
   };
 
   let authToken: string;
-  let mongoServer: MongoMemoryServer;
 
   beforeAll(async () => {
-    // Create an in-memory MongoDB instance
-    mongoServer = await MongoMemoryServer.create();
-    // Connect to the in-memory database
-    await connectDB(mongoServer.getUri());
-  });
-
-  afterAll(async () => {
-    // Clean up
-    await mongoose.connection.close();
-    await mongoose.disconnect();
-    await mongoServer.stop();
+    // Use the shared MongoDB connection
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error("Database connection not established");
+    }
   });
 
   beforeEach(async () => {

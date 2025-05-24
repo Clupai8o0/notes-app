@@ -12,10 +12,17 @@ import { beforeAll, afterAll } from "@jest/globals";
 
 let mongoServer: MongoMemoryServer;
 
-export {};
+// Export these for use in other test files
+export const getMongoUri = () => mongoServer.getUri();
+export const getMongoServer = () => mongoServer;
 
 beforeAll(async () => {
   try {
+    // Disconnect from any existing connections
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.disconnect();
+    }
+
     // Create an in-memory MongoDB instance
     mongoServer = await MongoMemoryServer.create();
     const mongoUri = mongoServer.getUri();

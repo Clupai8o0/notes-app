@@ -6,9 +6,6 @@ import authRoutes from "./routes/authRoutes";
 // load envs
 dotenv.config();
 
-// Connect to MongoDB
-connectDB();
-
 const app = express();
 
 // middlewares
@@ -25,6 +22,11 @@ app.get("/", (req: Request, res: Response) => {
 app.get("/ping", (req: Request, res: Response) => {
   res.status(200).send("Ping!");
 });
+
+// Connect to MongoDB only if not in test environment
+if (process.env.NODE_ENV !== "test") {
+  connectDB();
+}
 
 // running the application
 const PORT = process.env.PORT || 5000;
