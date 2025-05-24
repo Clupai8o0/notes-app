@@ -27,7 +27,7 @@ describe("Database Connection", () => {
   it("should connect to MongoDB successfully", async () => {
     // Set NODE_ENV to test
     process.env.NODE_ENV = "test";
-    
+
     // Disconnect if already connected
     if (mongoose.connection.readyState !== 0) {
       await mongoose.disconnect();
@@ -59,7 +59,7 @@ describe("Database Connection", () => {
 
   it("should maintain connection state", async () => {
     const uri = mongoServer.getUri();
-    
+
     // Disconnect if already connected
     if (mongoose.connection.readyState !== 0) {
       await mongoose.disconnect();

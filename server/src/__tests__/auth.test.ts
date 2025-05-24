@@ -2,9 +2,8 @@ import request from "supertest";
 import mongoose from "mongoose";
 import app from "../index";
 import User from "../models/User";
-import { getMongoUri } from "./setup";
 
-import { describe, it, expect, beforeAll, beforeEach, afterAll } from "@jest/globals";
+import { describe, it, expect, beforeAll, beforeEach } from "@jest/globals";
 
 describe("Auth Endpoints", () => {
   const testUser = {
