@@ -21,6 +21,12 @@ pipeline {
       }
     }
 
+    stage('Install Dependencies') {
+      steps {
+        sh 'apt-get update && apt-get install -y libcurl4'
+      }
+    }
+
     stage('Lint and Test Backend') {
       steps {
         dir('server') {
