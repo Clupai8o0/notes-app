@@ -3,40 +3,31 @@ import jwt from "jsonwebtoken";
 import User from "../models/User";
 
 interface AuthRequest extends Request {
-	user?: any;
+  user?: any;
 }
 
-export const protect = async (
-	req: AuthRequest,
-	res: Response,
-	next: NextFunction
-) => {
-	try {
-		let token;
+export const protect = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    let token;
 
-		if (req.headers.authorization?.startsWith("Bearer")) {
-			token = req.headers.authorization.split(" ")[1];
-		}
+    if (req.headers.authorization?.startsWith("Bearer")) {
+      token = req.headers.authorization.split(" ")[1];
+    }
 
-		if (!token) {
-			return res
-				.status(401)
-				.json({ message: "Not authorized to access this route" });
-		}
+    if (!token) {
+      return res.status(401).json({ message: "Not authorized to access this route" });
+    }
 
-		const decoded = jwt.verify(
-			token,
-			process.env.JWT_SECRET || "your-secret-key"
-		) as any;
-		const user = await User.findById(decoded.id).select("-password");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "your-secret-key") as any;
+    const user = await User.findById(decoded.id).select("-password");
 
-		if (!user) {
-			return res.status(401).json({ message: "User not found" });
-		}
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
 
-		req.user = user;
-		next();
-	} catch (error) {
-		res.status(401).json({ message: "Not authorized to access this route" });
-	}
+    req.user = user;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: "Not authorized to access this route" });
+  }
 };

@@ -1,11 +1,11 @@
-import request from 'supertest';
-import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import app from '../index';
-import connectDB from '../config/db';
-import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
+import request from "supertest";
+import mongoose from "mongoose";
+import { MongoMemoryServer } from "mongodb-memory-server";
+import app from "../index";
+import connectDB from "../config/db";
+import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
 
-describe('Server Endpoints', () => {
+describe("Server Endpoints", () => {
   let mongoServer: MongoMemoryServer;
 
   beforeAll(async () => {
@@ -23,20 +23,20 @@ describe('Server Endpoints', () => {
   });
 
   // Test the root endpoint
-  describe('GET /', () => {
-    it('should return a hello message', async () => {
-      const response = await request(app).get('/');
+  describe("GET /", () => {
+    it("should return a hello message", async () => {
+      const response = await request(app).get("/");
       expect(response.status).toBe(200);
-      expect(response.body).toEqual({ msg: 'Hello' });
+      expect(response.body).toEqual({ msg: "Hello" });
     });
   });
 
   // Test the ping endpoint
-  describe('GET /ping', () => {
-    it('should return ping message', async () => {
-      const response = await request(app).get('/ping');
+  describe("GET /ping", () => {
+    it("should return ping message", async () => {
+      const response = await request(app).get("/ping");
       expect(response.status).toBe(200);
-      expect(response.text).toBe('Ping!');
+      expect(response.text).toBe("Ping!");
     });
   });
-}); 
+});

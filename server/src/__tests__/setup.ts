@@ -12,37 +12,37 @@ import { beforeAll, afterAll } from "@jest/globals";
 
 let mongoServer: MongoMemoryServer;
 
-export {}
+export {};
 
 beforeAll(async () => {
-	try {
-		// Create an in-memory MongoDB instance
-		mongoServer = await MongoMemoryServer.create();
-		const mongoUri = mongoServer.getUri();
-		
-		// Connect to the in-memory database
-		await mongoose.connect(mongoUri);
-		console.log("Test database connected successfully");
-	} catch (error) {
-		console.error("Test database connection error:", error);
-		process.exit(1);
-	}
+  try {
+    // Create an in-memory MongoDB instance
+    mongoServer = await MongoMemoryServer.create();
+    const mongoUri = mongoServer.getUri();
+
+    // Connect to the in-memory database
+    await mongoose.connect(mongoUri);
+    console.log("Test database connected successfully");
+  } catch (error) {
+    console.error("Test database connection error:", error);
+    process.exit(1);
+  }
 });
 
 afterAll(async () => {
-	try {
-		// Clean up database and close connection
-		if (mongoose.connection.readyState === 1) {
-			await mongoose.connection.dropDatabase();
-		}
-		// Close all connections
-		await Promise.all(mongoose.connections.map(conn => conn.close()));
-		await mongoose.disconnect();
-		// Stop the in-memory server
-		await mongoServer.stop();
-		console.log("Test database connection closed");
-	} catch (error) {
-		console.error("Error closing test database connection:", error);
-		process.exit(1);
-	}
+  try {
+    // Clean up database and close connection
+    if (mongoose.connection.readyState === 1) {
+      await mongoose.connection.dropDatabase();
+    }
+    // Close all connections
+    await Promise.all(mongoose.connections.map((conn) => conn.close()));
+    await mongoose.disconnect();
+    // Stop the in-memory server
+    await mongoServer.stop();
+    console.log("Test database connection closed");
+  } catch (error) {
+    console.error("Error closing test database connection:", error);
+    process.exit(1);
+  }
 });

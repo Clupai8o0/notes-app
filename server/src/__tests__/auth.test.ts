@@ -8,143 +8,137 @@ import connectDB from "../config/db";
 import { describe, it, expect, beforeAll, beforeEach, afterAll } from "@jest/globals";
 
 describe("Auth Endpoints", () => {
-	const testUser = {
-		name: "Test User",
-		email: "test@example.com",
-		password: "password123",
-	};
+  const testUser = {
+    name: "Test User",
+    email: "test@example.com",
+    password: "password123",
+  };
 
-	let authToken: string;
-	let mongoServer: MongoMemoryServer;
+  let authToken: string;
+  let mongoServer: MongoMemoryServer;
 
-	beforeAll(async () => {
-		// Create an in-memory MongoDB instance
-		mongoServer = await MongoMemoryServer.create();
-		// Connect to the in-memory database
-		await connectDB(mongoServer.getUri());
-	});
+  beforeAll(async () => {
+    // Create an in-memory MongoDB instance
+    mongoServer = await MongoMemoryServer.create();
+    // Connect to the in-memory database
+    await connectDB(mongoServer.getUri());
+  });
 
-	afterAll(async () => {
-		// Clean up
-		await mongoose.connection.close();
-		await mongoose.disconnect();
-		await mongoServer.stop();
-	});
+  afterAll(async () => {
+    // Clean up
+    await mongoose.connection.close();
+    await mongoose.disconnect();
+    await mongoServer.stop();
+  });
 
-	beforeEach(async () => {
-		// Clear the users collection before each test
-		await User.deleteMany({});
-	});
+  beforeEach(async () => {
+    // Clear the users collection before each test
+    await User.deleteMany({});
+  });
 
-	describe("POST /api/auth/register", () => {
-		it("should register a new user", async () => {
-			const res = await request(app).post("/api/auth/register").send(testUser);
+  describe("POST /api/auth/register", () => {
+    it("should register a new user", async () => {
+      const res = await request(app).post("/api/auth/register").send(testUser);
 
-			expect(res.status).toBe(201);
-			expect(res.body).toHaveProperty("token");
-			expect(res.body.email).toBe(testUser.email);
-			expect(res.body.name).toBe(testUser.name);
-			expect(res.body).not.toHaveProperty("password");
-		});
+      expect(res.status).toBe(201);
+      expect(res.body).toHaveProperty("token");
+      expect(res.body.email).toBe(testUser.email);
+      expect(res.body.name).toBe(testUser.name);
+      expect(res.body).not.toHaveProperty("password");
+    });
 
-		it("should not register a user with existing email", async () => {
-			// First register
-			await request(app).post("/api/auth/register").send(testUser);
-			
-			// Try to register again
-			const res = await request(app).post("/api/auth/register").send(testUser);
+    it("should not register a user with existing email", async () => {
+      // First register
+      await request(app).post("/api/auth/register").send(testUser);
 
-			expect(res.status).toBe(400);
-			expect(res.body).toHaveProperty("message", "User already exists");
-		});
-	});
+      // Try to register again
+      const res = await request(app).post("/api/auth/register").send(testUser);
 
-	describe("POST /api/auth/login", () => {
-		beforeEach(async () => {
-			// Register a user before login tests
-			await request(app).post("/api/auth/register").send(testUser);
-		});
+      expect(res.status).toBe(400);
+      expect(res.body).toHaveProperty("message", "User already exists");
+    });
+  });
 
-		it("should login with correct credentials", async () => {
-			const res = await request(app).post("/api/auth/login").send({
-				email: testUser.email,
-				password: testUser.password,
-			});
+  describe("POST /api/auth/login", () => {
+    beforeEach(async () => {
+      // Register a user before login tests
+      await request(app).post("/api/auth/register").send(testUser);
+    });
 
-			expect(res.status).toBe(200);
-			expect(res.body).toHaveProperty("token");
-			expect(res.body.email).toBe(testUser.email);
-			authToken = res.body.token;
-		});
+    it("should login with correct credentials", async () => {
+      const res = await request(app).post("/api/auth/login").send({
+        email: testUser.email,
+        password: testUser.password,
+      });
 
-		it("should not login with incorrect password", async () => {
-			const res = await request(app).post("/api/auth/login").send({
-				email: testUser.email,
-				password: "wrongpassword",
-			});
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("token");
+      expect(res.body.email).toBe(testUser.email);
+      authToken = res.body.token;
+    });
 
-			expect(res.status).toBe(401);
-			expect(res.body).toHaveProperty("message", "Invalid email or password");
-		});
-	});
+    it("should not login with incorrect password", async () => {
+      const res = await request(app).post("/api/auth/login").send({
+        email: testUser.email,
+        password: "wrongpassword",
+      });
 
-	describe("GET /api/auth/profile", () => {
-		beforeEach(async () => {
-			// Register and login before profile tests
-			const registerRes = await request(app).post("/api/auth/register").send(testUser);
-			authToken = registerRes.body.token;
-		});
+      expect(res.status).toBe(401);
+      expect(res.body).toHaveProperty("message", "Invalid email or password");
+    });
+  });
 
-		it("should get user profile with valid token", async () => {
-			const res = await request(app)
-				.get("/api/auth/profile")
-				.set("Authorization", `Bearer ${authToken}`);
+  describe("GET /api/auth/profile", () => {
+    beforeEach(async () => {
+      // Register and login before profile tests
+      const registerRes = await request(app).post("/api/auth/register").send(testUser);
+      authToken = registerRes.body.token;
+    });
 
-			expect(res.status).toBe(200);
-			expect(res.body.email).toBe(testUser.email);
-			expect(res.body.name).toBe(testUser.name);
-			expect(res.body).not.toHaveProperty("password");
-		});
+    it("should get user profile with valid token", async () => {
+      const res = await request(app)
+        .get("/api/auth/profile")
+        .set("Authorization", `Bearer ${authToken}`);
 
-		it("should not get profile without token", async () => {
-			const res = await request(app).get("/api/auth/profile");
+      expect(res.status).toBe(200);
+      expect(res.body.email).toBe(testUser.email);
+      expect(res.body.name).toBe(testUser.name);
+      expect(res.body).not.toHaveProperty("password");
+    });
 
-			expect(res.status).toBe(401);
-			expect(res.body).toHaveProperty(
-				"message",
-				"Not authorized to access this route"
-			);
-		});
-	});
+    it("should not get profile without token", async () => {
+      const res = await request(app).get("/api/auth/profile");
 
-	describe("DELETE /api/auth/delete", () => {
-		beforeEach(async () => {
-			// Register and login before delete tests
-			const registerRes = await request(app).post("/api/auth/register").send(testUser);
-			authToken = registerRes.body.token;
-		});
+      expect(res.status).toBe(401);
+      expect(res.body).toHaveProperty("message", "Not authorized to access this route");
+    });
+  });
 
-		it("should delete user with valid token", async () => {
-			const res = await request(app)
-				.delete("/api/auth/delete")
-				.set("Authorization", `Bearer ${authToken}`);
+  describe("DELETE /api/auth/delete", () => {
+    beforeEach(async () => {
+      // Register and login before delete tests
+      const registerRes = await request(app).post("/api/auth/register").send(testUser);
+      authToken = registerRes.body.token;
+    });
 
-			expect(res.status).toBe(200);
-			expect(res.body).toHaveProperty("message", "User deleted successfully");
+    it("should delete user with valid token", async () => {
+      const res = await request(app)
+        .delete("/api/auth/delete")
+        .set("Authorization", `Bearer ${authToken}`);
 
-			// Verify user is deleted
-			const user = await User.findOne({ email: testUser.email });
-			expect(user).toBeNull();
-		});
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("message", "User deleted successfully");
 
-		it("should not delete user without token", async () => {
-			const res = await request(app).delete("/api/auth/delete");
+      // Verify user is deleted
+      const user = await User.findOne({ email: testUser.email });
+      expect(user).toBeNull();
+    });
 
-			expect(res.status).toBe(401);
-			expect(res.body).toHaveProperty(
-				"message",
-				"Not authorized to access this route"
-			);
-		});
-	});
+    it("should not delete user without token", async () => {
+      const res = await request(app).delete("/api/auth/delete");
+
+      expect(res.status).toBe(401);
+      expect(res.body).toHaveProperty("message", "Not authorized to access this route");
+    });
+  });
 });
