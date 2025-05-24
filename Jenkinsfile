@@ -1,7 +1,7 @@
 pipeline {
   agent {
     docker {
-      image 'ubuntu:24'
+      image 'ubuntu:24.04'
       image 'node:22-slim'
       image 'docker:latest'
       args '-v /var/run/docker.sock:/var/run/docker.sock'
