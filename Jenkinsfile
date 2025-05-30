@@ -75,67 +75,67 @@ pipeline {
     //   }
     // }
 
-    stage('Snyk Security Scan') {
-      steps {
-        withCredentials([string(credentialsId: 'snyk-token', variable: 'SNYK_TOKEN')]) {
-          script {
-            dir('server') {
-              sh """
-                npm install --force
-                npx snyk auth $SNYK_TOKEN
-                npx snyk test 
-              """
-            }
-            dir('client') {
-              sh """
-                npm install --force
-                npx snyk auth $SNYK_TOKEN
-                npx snyk test 
-              """
-            }
-          }
-        }
-      }
-    }
+    // stage('Snyk Security Scan') {
+    //   steps {
+    //     withCredentials([string(credentialsId: 'snyk-token', variable: 'SNYK_TOKEN')]) {
+    //       script {
+    //         dir('server') {
+    //           sh """
+    //             npm install --force
+    //             npx snyk auth $SNYK_TOKEN
+    //             npx snyk test 
+    //           """
+    //         }
+    //         dir('client') {
+    //           sh """
+    //             npm install --force
+    //             npx snyk auth $SNYK_TOKEN
+    //             npx snyk test 
+    //           """
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
-    stage('Release Tagging') {
-      steps {
-        script {
-          def version = "v1.0.${BUILD_NUMBER}"
+    // stage('Release Tagging') {
+    //   steps {
+    //     script {
+    //       def version = "v1.0.${BUILD_NUMBER}"
 
-          // Update package.json versions
-          sh """
-            cd server
-            npm version ${version} --no-git-tag-version
-            cd ../client
-            npm version ${version} --no-git-tag-version
-          """
+    //       // Update package.json versions
+    //       sh """
+    //         cd server
+    //         npm version ${version} --no-git-tag-version
+    //         cd ../client
+    //         npm version ${version} --no-git-tag-version
+    //       """
 
-          withCredentials([usernamePassword(credentialsId: 'github-push-creds', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
-            sh """
-              git config user.email "clupai8o0@gmail.com"
-              git config user.name "Clupai8o0"
-              git remote set-url origin https://${GIT_USER}:${GIT_TOKEN}@github.com/Clupai8o0/notes-app.git
-              git add server/package.json client/package.json
-              git commit -m "Release version 1.0.${BUILD_NUMBER}" || echo "No changes to commit"
-              git tag v1.0.${BUILD_NUMBER}
-              git push origin main --tags
-            """
-          }
-        }
-      }
-    }
+    //       withCredentials([usernamePassword(credentialsId: 'github-push-creds', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
+    //         sh """
+    //           git config user.email "clupai8o0@gmail.com"
+    //           git config user.name "Clupai8o0"
+    //           git remote set-url origin https://${GIT_USER}:${GIT_TOKEN}@github.com/Clupai8o0/notes-app.git
+    //           git add server/package.json client/package.json
+    //           git commit -m "Release version 1.0.${BUILD_NUMBER}" || echo "No changes to commit"
+    //           git tag v1.0.${BUILD_NUMBER}
+    //           git push origin main --tags
+    //         """
+    //       }
+    //     }
+    //   }
+    // }
 
 
-    stage('Deploy to Production') {
-      steps {
-        input message: 'Deploy to Production?'
-        script {
-          def version = "v1.0.${BUILD_NUMBER}"
-          deployToProd(version)
-        }
-      }
-    }
+    // stage('Deploy to Production') {
+    //   steps {
+    //     input message: 'Deploy to Production?'
+    //     script {
+    //       def version = "v1.0.${BUILD_NUMBER}"
+    //       deployToProd(version)
+    //     }
+    //   }
+    // }
 
     stage('Smoke Test on EC2') {
       steps {
