@@ -26,6 +26,27 @@ out
 # Test coverage
 coverage
 
+# Test files and directories
+__tests__
+**/*.test.ts
+**/*.test.tsx
+**/*.test.js
+**/*.test.jsx
+**/*.spec.ts
+**/*.spec.tsx
+**/*.spec.js
+**/*.spec.jsx
+jest.config.js
+jest.config.ts
+jest.setup.js
+jest.setup.ts
+**/test-utils/
+**/__mocks__/
+
+# Documentation
+*.md
+docs/
+
 # Docker
 Dockerfile
 .dockerignore

@@ -26,6 +26,19 @@ build
 # Test coverage
 coverage
 
+# Test files and directories
+src/__tests__
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
+jest.config.js
+jest.config.ts
+
+# Documentation
+*.md
+docs/
+
 # Docker
 Dockerfile
 .dockerignore 
