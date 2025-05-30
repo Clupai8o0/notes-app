@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: clupai8o0/notes-app-server:latest
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./server/.env
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: clupai8o0/notes-app-client:latest
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./client/.env
+    restart: unless-stopped
+    depends_on:
+      - server
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
