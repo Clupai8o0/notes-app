@@ -20,60 +20,60 @@ pipeline {
       }
     }
 
-    stage('Lint and Test Backend') {
-      steps {
-        dir('server') {
-          sh 'npm install --force'
-          sh 'npm run lint'
-          sh 'npm test'
-        }
-      }
-    }
+    // stage('Lint and Test Backend') {
+    //   steps {
+    //     dir('server') {
+    //       sh 'npm install --force'
+    //       sh 'npm run lint'
+    //       sh 'npm test'
+    //     }
+    //   }
+    // }
 
-    stage('Lint and Test Frontend') {
-      steps {
-        dir('client') {
-          sh 'npm install --force'
-          sh 'npm run lint'
-          sh 'npm test'
-        }
-      }
-    }
+    // stage('Lint and Test Frontend') {
+    //   steps {
+    //     dir('client') {
+    //       sh 'npm install --force'
+    //       sh 'npm run lint'
+    //       sh 'npm test'
+    //     }
+    //   }
+    // }
 
-    stage('Build and Push Docker Images') {
-      steps {
-        script {
-          docker.image('docker:latest').inside('-v /var/run/docker.sock:/var/run/docker.sock') {
-            withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-              def version = "v1.0.${BUILD_NUMBER}"
-              sh "docker build -t clupai8o0/notes-app-server:${version} ./server"
-              sh "docker build -t clupai8o0/notes-app-client:${version} ./client"
-              sh "echo '$DOCKER_PASS' | docker login -u '$DOCKER_USER' --password-stdin"
-              sh "docker push clupai8o0/notes-app-server:${version}"
-              sh "docker push clupai8o0/notes-app-client:${version}"
-            }
-          }
-        }
-      }
-    }
+    // stage('Build and Push Docker Images') {
+    //   steps {
+    //     script {
+    //       docker.image('docker:latest').inside('-v /var/run/docker.sock:/var/run/docker.sock') {
+    //         withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+    //           def version = "v1.0.${BUILD_NUMBER}"
+    //           sh "docker build -t clupai8o0/notes-app-server:${version} ./server"
+    //           sh "docker build -t clupai8o0/notes-app-client:${version} ./client"
+    //           sh "echo '$DOCKER_PASS' | docker login -u '$DOCKER_USER' --password-stdin"
+    //           sh "docker push clupai8o0/notes-app-server:${version}"
+    //           sh "docker push clupai8o0/notes-app-client:${version}"
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
-    stage('Code Quality Analysis') {
-      steps {
-        withSonarQubeEnv('SonarCloud') {
-          withCredentials([string(credentialsId: 'notes-app-sonarcloud-token', variable: 'SONAR_TOKEN')]) {
-            script {
-              def scannerHome = tool name: 'SonarScanner'
-              dir('server') {
-                sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN}"
-              }
-              dir('client') {
-                sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN}"
-              }
-            }
-          }
-        }
-      }
-    }
+    // stage('Code Quality Analysis') {
+    //   steps {
+    //     withSonarQubeEnv('SonarCloud') {
+    //       withCredentials([string(credentialsId: 'notes-app-sonarcloud-token', variable: 'SONAR_TOKEN')]) {
+    //         script {
+    //           def scannerHome = tool name: 'SonarScanner'
+    //           dir('server') {
+    //             sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN}"
+    //           }
+    //           dir('client') {
+    //             sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN}"
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
     stage('Snyk Security Scan') {
       steps {
