@@ -8,10 +8,6 @@ pipeline {
     DEPLOY_DIR = '/home/ubuntu/notes-app-prod'
   }
 
-  parameters {
-    string(name: 'ROLLBACK_VERSION', defaultValue: '', description: 'Enter version to roll back to (e.g., v1.0.73) or leave blank')
-  }
-
   options {
     skipStagesAfterUnstable()
     ansiColor('xterm')
