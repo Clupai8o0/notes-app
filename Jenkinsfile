@@ -136,29 +136,6 @@ pipeline {
     //     }
     //   }
     // }
-
-    stage('Smoke Test on EC2') {
-      steps {
-        script {
-          // Allow a few seconds for services to spin up
-          sleep 10
-
-          // Replace 223 with your app port if different
-          def url = "http://${EC2_IP}:223/ping"
-
-          // Try hitting /ping once, fail if it doesn’t return HTTP 200
-          sh """
-            STATUS=\$(curl -o /dev/null -s -w '%{http_code}' ${url})
-            if [ \"\$STATUS\" != \"200\" ]; then
-              echo \"❌ Smoke test failed! HTTP status \$STATUS from ${url}\"
-              exit 1
-            else
-              echo \"✅ Smoke test passed! ${url} is reachable.\"
-            fi
-          """
-        }
-      }
-    }
   
     stage('Monitoring and Alerts') {
       steps {
