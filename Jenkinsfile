@@ -180,7 +180,7 @@ pipeline {
 
           // 2. Check Prometheus target status via its API, but just look for "up" in the JSON
           sh """
-            RES=$(curl -s "http://${EC2_IP}:9090/api/v1/targets?state=active")
+            RES=\$(curl -s "http://${EC2_IP}:9090/api/v1/targets?state=active")
             echo "\$RES" | grep -q '"job":"notes-app"' && echo "✅ Prometheus target 'notes-app' is ACTIVE" || (echo "❌ Prometheus target not active" && exit 1)
           """
         }
