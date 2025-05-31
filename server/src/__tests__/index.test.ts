@@ -34,7 +34,7 @@ describe("Server Endpoints", () => {
   // Test the ping endpoint
   describe("GET /server/ping", () => {
     it("should return ping message", async () => {
-      const response = await request(app).get("/server/ping");
+      const response = await request(app).get("/server/pin");
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ msg: "Ping!" });
     });

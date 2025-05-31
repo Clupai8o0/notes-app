@@ -4,7 +4,7 @@ services:
   server:
     image: clupai8o0/notes-app-server:v1.0.${BUILD_NUMBER}
     ports:
-      - "5000:5000"
+      - "5000"
     env_file:
       - ./server/.env.production
     restart: unless-stopped
@@ -14,7 +14,7 @@ services:
   client:
     image: clupai8o0/notes-app-client:v1.0.${BUILD_NUMBER}
     ports:
-      - "3000:3000"
+      - "3000"
     env_file:
       - ./client/.env.production
     restart: unless-stopped
