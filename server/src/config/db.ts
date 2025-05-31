@@ -21,15 +21,20 @@ const connectDB = async (uri?: string): Promise<void> => {
 
     // Log connection status based on environment
     if (process.env.NODE_ENV === "test") {
+      // eslint-disable-next-line no-console
       console.log("Test database connected successfully");
     } else if (process.env.NODE_ENV === "development") {
+      // eslint-disable-next-line no-console
       console.log("Development database connected successfully");
     } else if (process.env.NODE_ENV === "production") {
+      // eslint-disable-next-line no-console
       console.log("Production database connected successfully");
     } else {
+      // eslint-disable-next-line no-console
       console.log("MongoDB connected successfully");
     }
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("MongoDB connection error:", error);
     process.exit(1);
   }

@@ -184,7 +184,9 @@ describe("Auth Controller - Comprehensive Tests", () => {
     });
 
     it("should handle token without Bearer prefix", async () => {
-      const res = await request(app).get("/server/api/auth/profile").set("Authorization", authToken);
+      const res = await request(app)
+        .get("/server/api/auth/profile")
+        .set("Authorization", authToken);
 
       expect(res.status).toBe(401);
       expect(res.body).toHaveProperty(
@@ -211,7 +213,9 @@ describe("Auth Controller - Comprehensive Tests", () => {
 
     it("should handle deletion of already deleted user", async () => {
       // Delete the user first
-      await request(app).delete("/server/api/auth/delete").set("Authorization", `Bearer ${authToken}`);
+      await request(app)
+        .delete("/server/api/auth/delete")
+        .set("Authorization", `Bearer ${authToken}`);
 
       // Try to delete again
       const res = await request(app)

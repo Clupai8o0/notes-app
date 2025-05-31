@@ -13,8 +13,8 @@ import { beforeAll, afterAll } from "@jest/globals";
 let mongoServer: MongoMemoryServer;
 
 // Export these for use in other test files
-export const getMongoUri = () => mongoServer.getUri();
-export const getMongoServer = () => mongoServer;
+export const getMongoUri = (): string => mongoServer.getUri();
+export const getMongoServer = (): MongoMemoryServer => mongoServer;
 
 beforeAll(async () => {
   try {
@@ -29,8 +29,10 @@ beforeAll(async () => {
 
     // Connect to the in-memory database
     await mongoose.connect(mongoUri);
+    // eslint-disable-next-line no-console
     console.log("Test database connected successfully");
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Test database connection error:", error);
     process.exit(1);
   }
@@ -47,8 +49,10 @@ afterAll(async () => {
     await mongoose.disconnect();
     // Stop the in-memory server
     await mongoServer.stop();
+    // eslint-disable-next-line no-console
     console.log("Test database connection closed");
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error closing test database connection:", error);
     process.exit(1);
   }

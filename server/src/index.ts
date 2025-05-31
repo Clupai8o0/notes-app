@@ -36,6 +36,7 @@ app.get("/server", (req: Request, res: Response) => {
 
 //! Test ping route
 app.get("/server/ping", (req: Request, res: Response) => {
+  // eslint-disable-next-line no-console
   console.log(`Ping received from ${req.ip}`);
   res.status(200).json({ msg: "Ping!" });
 });
@@ -49,6 +50,7 @@ if (process.env.NODE_ENV !== "test") {
 const PORT = process.env.PORT || 5000;
 if (process.env.NODE_ENV !== "test") {
   app.listen(typeof PORT === "string" ? parseInt(PORT) : PORT, "0.0.0.0", () => {
+    // eslint-disable-next-line no-console
     console.log(`The server is running port ${PORT}`);
   });
 }

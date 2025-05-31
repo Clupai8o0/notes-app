@@ -387,7 +387,9 @@ describe("Integration Tests", () => {
       });
 
       // Verify notes exist
-      const notesRes = await request(app).get("/server/api/notes").set("Authorization", `Bearer ${token}`);
+      const notesRes = await request(app)
+        .get("/server/api/notes")
+        .set("Authorization", `Bearer ${token}`);
 
       expect(notesRes.status).toBe(200);
       expect(notesRes.body).toHaveLength(2);

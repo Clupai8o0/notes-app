@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import User from "../models/User";
+import User, { IUser } from "../models/User";
 
 interface AuthRequest extends Request {
-  user?: any;
+  user?: IUser;
 }
 
 // Generate JWT Token
@@ -18,7 +18,7 @@ const generateToken = (id: string): string => {
 // @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
-export const register = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response): Promise<Response | void> => {
   try {
     const { name, email, password } = req.body;
 
@@ -43,20 +43,23 @@ export const register = async (req: Request, res: Response) => {
         token: generateToken(user._id as string),
       });
     }
-  } catch (error: any) {
-    res.status(400).json({ message: error.message });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    res.status(400).json({ message: errorMessage });
   }
 };
 
 // @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response): Promise<Response | void> => {
   try {
     const { email, password } = req.body;
+    // eslint-disable-next-line no-console
     console.log("Login controller - email:", email); // Debug log
 
     const user = await User.findOne({ email });
+    // eslint-disable-next-line no-console
     console.log("User found:", user ? "Yes" : "No"); // Debug log
 
     if (!user) {
@@ -64,6 +67,7 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const isMatch = await user.comparePassword(password);
+    // eslint-disable-next-line no-console
     console.log("Password match:", isMatch ? "Yes" : "No"); // Debug log
 
     if (!isMatch) {
@@ -73,6 +77,7 @@ export const login = async (req: Request, res: Response) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || "your-secret-key", {
       expiresIn: "30d",
     });
+    // eslint-disable-next-line no-console
     console.log("Generated token:", token); // Debug log
 
     // Set cookie options
@@ -82,10 +87,12 @@ export const login = async (req: Request, res: Response) => {
       sameSite: "strict" as const,
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     };
+    // eslint-disable-next-line no-console
     console.log("Cookie options:", cookieOptions); // Debug log
 
     // Set the token in a cookie
     res.cookie("token", token, cookieOptions);
+    // eslint-disable-next-line no-console
     console.log("Cookie set in response"); // Debug log
 
     res.json({
@@ -95,6 +102,7 @@ export const login = async (req: Request, res: Response) => {
       token,
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Login controller error:", error); // Debug log
     res.status(500).json({ message: "Server error" });
   }
@@ -103,31 +111,33 @@ export const login = async (req: Request, res: Response) => {
 // @desc    Get user profile
 // @route   GET /api/auth/profile
 // @access  Private
-export const getProfile = async (req: AuthRequest, res: Response) => {
+export const getProfile = async (req: AuthRequest, res: Response): Promise<Response | void> => {
   try {
-    const user = await User.findById(req.user._id).select("-password");
+    const user = await User.findById(req.user?._id).select("-password");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     res.json(user);
-  } catch (error: any) {
-    res.status(400).json({ message: error.message });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    res.status(400).json({ message: errorMessage });
   }
 };
 
 // @desc    Delete user
 // @route   DELETE /api/auth/delete
 // @access  Private
-export const deleteUser = async (req: AuthRequest, res: Response) => {
+export const deleteUser = async (req: AuthRequest, res: Response): Promise<Response | void> => {
   try {
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user?._id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     await user.deleteOne();
     res.status(200).json({ message: "User deleted successfully" });
-  } catch (error: any) {
-    res.status(400).json({ message: error.message });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    res.status(400).json({ message: errorMessage });
   }
 };

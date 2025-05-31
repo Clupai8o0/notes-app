@@ -171,7 +171,9 @@ describe("Note Controller - Comprehensive Tests", () => {
     });
 
     it("should return notes sorted by creation date (newest first)", async () => {
-      const res = await request(app).get("/server/api/notes").set("Authorization", `Bearer ${authToken}`);
+      const res = await request(app)
+        .get("/server/api/notes")
+        .set("Authorization", `Bearer ${authToken}`);
 
       expect(res.status).toBe(200);
       expect(res.body.length).toBe(3);
@@ -184,7 +186,9 @@ describe("Note Controller - Comprehensive Tests", () => {
     });
 
     it("should only return notes belonging to authenticated user", async () => {
-      const res = await request(app).get("/server/api/notes").set("Authorization", `Bearer ${authToken}`);
+      const res = await request(app)
+        .get("/server/api/notes")
+        .set("Authorization", `Bearer ${authToken}`);
 
       expect(res.status).toBe(200);
       expect(res.body.length).toBe(3);
@@ -390,7 +394,9 @@ describe("Note Controller - Comprehensive Tests", () => {
       });
       Note.find = mockFind as any;
 
-      const res = await request(app).get("/server/api/notes").set("Authorization", `Bearer ${authToken}`);
+      const res = await request(app)
+        .get("/server/api/notes")
+        .set("Authorization", `Bearer ${authToken}`);
 
       expect(res.status).toBe(500);
       expect(res.body).toHaveProperty("message", "Database connection failed");
