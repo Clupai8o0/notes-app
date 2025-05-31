@@ -1,4 +1,4 @@
-pipeline {
+[Bpipeline {
   agent any
 
   environment {
@@ -20,25 +20,25 @@ pipeline {
       }
     }
 
-    // stage('Lint and Test Backend') {
-    //   steps {
-    //     dir('server') {
-    //       sh 'npm install --force'
-    //       sh 'npm run lint'
-    //       sh 'npm test'
-    //     }
-    //   }
-    // }
+    stage('Lint and Test Backend') {
+      steps {
+        dir('server') {
+          sh 'npm install --force'
+          sh 'npm run lint'
+          sh 'npm test'
+        }
+      }
+    }
 
-    // stage('Lint and Test Frontend') {
-    //   steps {
-    //     dir('client') {
-    //       sh 'npm install --force'
-    //       sh 'npm run lint'
-    //       sh 'npm test'
-    //     }
-    //   }
-    // }
+    stage('Lint and Test Frontend') {
+      steps {
+        dir('client') {
+          sh 'npm install --force'
+          sh 'npm run lint'
+          sh 'npm test'
+        }
+      }
+    }
 
     stage('Build and Push Docker Images') {
       steps {
@@ -57,46 +57,46 @@ pipeline {
       }
     }
 
-    // stage('Code Quality Analysis') {
-    //   steps {
-    //     withSonarQubeEnv('SonarCloud') {
-    //       withCredentials([string(credentialsId: 'notes-app-sonarcloud-token', variable: 'SONAR_TOKEN')]) {
-    //         script {
-    //           def scannerHome = tool name: 'SonarScanner'
-    //           dir('server') {
-    //             sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN}"
-    //           }
-    //           dir('client') {
-    //             sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN}"
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
+    stage('Code Quality Analysis') {
+      steps {
+        withSonarQubeEnv('SonarCloud') {
+          withCredentials([string(credentialsId: 'notes-app-sonarcloud-token', variable: 'SONAR_TOKEN')]) {
+            script {
+              def scannerHome = tool name: 'SonarScanner'
+              dir('server') {
+                sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN}"
+              }
+              dir('client') {
+                sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN}"
+              }
+            }
+          }
+        }
+      }
+    }
 
-    // stage('Snyk Security Scan') {
-    //   steps {
-    //     withCredentials([string(credentialsId: 'snyk-token', variable: 'SNYK_TOKEN')]) {
-    //       script {
-    //         dir('server') {
-    //           sh """
-    //             npm install --force
-    //             npx snyk auth $SNYK_TOKEN
-    //             npx snyk test 
-    //           """
-    //         }
-    //         dir('client') {
-    //           sh """
-    //             npm install --force
-    //             npx snyk auth $SNYK_TOKEN
-    //             npx snyk test 
-    //           """
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
+    stage('Snyk Security Scan') {
+      steps {
+        withCredentials([string(credentialsId: 'snyk-token', variable: 'SNYK_TOKEN')]) {
+          script {
+            dir('server') {
+              sh """
+                npm install --force
+                npx snyk auth $SNYK_TOKEN
+                npx snyk test 
+              """
+            }
+            dir('client') {
+              sh """
+                npm install --force
+                npx snyk auth $SNYK_TOKEN
+                npx snyk test 
+              """
+            }
+          }
+        }
+      }
+    }
 
     stage('Release Tagging') {
       steps {
