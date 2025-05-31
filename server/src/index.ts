@@ -21,21 +21,21 @@ app.use(
 );
 app.use(
   prometheus({
-    metricsPath: "/metrics",
+    metricsPath: "/server/metrics",
     collectDefaultMetrics: true,
   })
 );
 
 // Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/notes", noteRoutes);
+app.use("/server/api/auth", authRoutes);
+app.use("/server/api/notes", noteRoutes);
 
-app.get("/", (req: Request, res: Response) => {
+app.get("/server", (req: Request, res: Response) => {
   res.json({ msg: "Hello" });
 });
 
 //! Test ping route
-app.get("/ping", (req: Request, res: Response) => {
+app.get("/server/ping", (req: Request, res: Response) => {
   console.log(`Ping received from ${req.ip}`);
   res.status(200).json({ msg: "Ping!" });
 });
