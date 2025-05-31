@@ -144,7 +144,7 @@ pipeline {
           sleep 10
 
           // Replace 223 with your app port if different
-          def url = "http://${EC2_IP}:223/ping"
+          def url = "http://${EC2_IP}/server/ping"
 
           // Try hitting /ping once, fail if it doesn’t return HTTP 200
           sh """
@@ -167,7 +167,7 @@ pipeline {
 
           // 1. Basic health-check: if /metrics returns 200, assume Prometheus sees you too
           sh """
-            if ! curl -f http://${EC2_IP}:223/metrics; then
+            if ! curl -f http://${EC2_IP}/server/metrics; then
               echo "❌ /metrics endpoint failed!"
               exit 1
             fi
