@@ -23,18 +23,18 @@ describe("Server Endpoints", () => {
   });
 
   // Test the root endpoint
-  describe("GET /", () => {
+  describe("GET /server", () => {
     it("should return a hello message", async () => {
-      const response = await request(app).get("/");
+      const response = await request(app).get("/server");
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ msg: "Hello" });
     });
   });
 
   // Test the ping endpoint
-  describe("GET /ping", () => {
+  describe("GET /server/ping", () => {
     it("should return ping message", async () => {
-      const response = await request(app).get("/ping");
+      const response = await request(app).get("/server/ping");
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ msg: "Ping!" });
     });

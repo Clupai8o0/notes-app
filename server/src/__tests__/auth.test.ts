@@ -26,9 +26,9 @@ describe("Auth Endpoints", () => {
     await User.deleteMany({});
   });
 
-  describe("POST /api/auth/register", () => {
+  describe("POST /server/api/auth/register", () => {
     it("should register a new user", async () => {
-      const res = await request(app).post("/api/auth/register").send(testUser);
+      const res = await request(app).post("/server/api/auth/register").send(testUser);
 
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty("token");
@@ -39,24 +39,24 @@ describe("Auth Endpoints", () => {
 
     it("should not register a user with existing email", async () => {
       // First register
-      await request(app).post("/api/auth/register").send(testUser);
+      await request(app).post("/server/api/auth/register").send(testUser);
 
       // Try to register again
-      const res = await request(app).post("/api/auth/register").send(testUser);
+      const res = await request(app).post("/server/api/auth/register").send(testUser);
 
       expect(res.status).toBe(400);
       expect(res.body).toHaveProperty("message", "User already exists");
     });
   });
 
-  describe("POST /api/auth/login", () => {
+  describe("POST /server/api/auth/login", () => {
     beforeEach(async () => {
       // Register a user before login tests
-      await request(app).post("/api/auth/register").send(testUser);
+      await request(app).post("/server/api/auth/register").send(testUser);
     });
 
     it("should login with correct credentials", async () => {
-      const res = await request(app).post("/api/auth/login").send({
+      const res = await request(app).post("/server/api/auth/login").send({
         email: testUser.email,
         password: testUser.password,
       });
@@ -68,7 +68,7 @@ describe("Auth Endpoints", () => {
     });
 
     it("should not login with incorrect password", async () => {
-      const res = await request(app).post("/api/auth/login").send({
+      const res = await request(app).post("/server/api/auth/login").send({
         email: testUser.email,
         password: "wrongpassword",
       });
@@ -78,16 +78,16 @@ describe("Auth Endpoints", () => {
     });
   });
 
-  describe("GET /api/auth/profile", () => {
+  describe("GET /server/api/auth/profile", () => {
     beforeEach(async () => {
       // Register and login before profile tests
-      const registerRes = await request(app).post("/api/auth/register").send(testUser);
+      const registerRes = await request(app).post("/server/api/auth/register").send(testUser);
       authToken = registerRes.body.token;
     });
 
     it("should get user profile with valid token in Authorization header", async () => {
       const res = await request(app)
-        .get("/api/auth/profile")
+        .get("/server/api/auth/profile")
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(res.status).toBe(200);
@@ -97,7 +97,7 @@ describe("Auth Endpoints", () => {
     });
 
     it("should not get profile without token", async () => {
-      const res = await request(app).get("/api/auth/profile");
+      const res = await request(app).get("/server/api/auth/profile");
 
       expect(res.status).toBe(401);
       expect(res.body).toHaveProperty(
@@ -108,7 +108,7 @@ describe("Auth Endpoints", () => {
 
     it("should not get profile with invalid token", async () => {
       const res = await request(app)
-        .get("/api/auth/profile")
+        .get("/server/api/auth/profile")
         .set("Authorization", "Bearer invalid-token");
 
       expect(res.status).toBe(401);
@@ -116,16 +116,16 @@ describe("Auth Endpoints", () => {
     });
   });
 
-  describe("DELETE /api/auth/delete", () => {
+  describe("DELETE /server/api/auth/delete", () => {
     beforeEach(async () => {
       // Register and login before delete tests
-      const registerRes = await request(app).post("/api/auth/register").send(testUser);
+      const registerRes = await request(app).post("/server/api/auth/register").send(testUser);
       authToken = registerRes.body.token;
     });
 
     it("should delete user with valid token in Authorization header", async () => {
       const res = await request(app)
-        .delete("/api/auth/delete")
+        .delete("/server/api/auth/delete")
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(res.status).toBe(200);
@@ -137,7 +137,7 @@ describe("Auth Endpoints", () => {
     });
 
     it("should not delete user without token", async () => {
-      const res = await request(app).delete("/api/auth/delete");
+      const res = await request(app).delete("/server/api/auth/delete");
 
       expect(res.status).toBe(401);
       expect(res.body).toHaveProperty(
@@ -148,7 +148,7 @@ describe("Auth Endpoints", () => {
 
     it("should not delete user with invalid token", async () => {
       const res = await request(app)
-        .delete("/api/auth/delete")
+        .delete("/server/api/auth/delete")
         .set("Authorization", "Bearer invalid-token");
 
       expect(res.status).toBe(401);

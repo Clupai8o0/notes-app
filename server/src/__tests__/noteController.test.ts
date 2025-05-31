@@ -48,7 +48,7 @@ describe("Note Controller - Comprehensive Tests", () => {
   describe("Note Creation Edge Cases", () => {
     it("should reject note creation with empty title", async () => {
       const res = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .set("Authorization", `Bearer ${authToken}`)
         .send({
           title: "",
@@ -61,7 +61,7 @@ describe("Note Controller - Comprehensive Tests", () => {
 
     it("should reject note creation with empty content", async () => {
       const res = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .set("Authorization", `Bearer ${authToken}`)
         .send({
           title: "Test Title",
@@ -75,7 +75,7 @@ describe("Note Controller - Comprehensive Tests", () => {
     it("should handle very long title", async () => {
       const longTitle = "A".repeat(1000);
       const res = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .set("Authorization", `Bearer ${authToken}`)
         .send({
           title: longTitle,
@@ -89,7 +89,7 @@ describe("Note Controller - Comprehensive Tests", () => {
     it("should handle very long content", async () => {
       const longContent = "A".repeat(10000);
       const res = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .set("Authorization", `Bearer ${authToken}`)
         .send({
           title: "Test Title",
@@ -102,7 +102,7 @@ describe("Note Controller - Comprehensive Tests", () => {
 
     it("should trim whitespace from title", async () => {
       const res = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .set("Authorization", `Bearer ${authToken}`)
         .send({
           title: "  Test Title  ",
@@ -116,7 +116,7 @@ describe("Note Controller - Comprehensive Tests", () => {
     it("should preserve whitespace in content", async () => {
       const content = "  Line 1\n  Line 2  \n  Line 3  ";
       const res = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .set("Authorization", `Bearer ${authToken}`)
         .send({
           title: "Test Title",
@@ -132,7 +132,7 @@ describe("Note Controller - Comprehensive Tests", () => {
       const specialContent = "Content with émojis 🎉 and spéçial charaçters";
 
       const res = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .set("Authorization", `Bearer ${authToken}`)
         .send({
           title: specialTitle,
@@ -171,7 +171,7 @@ describe("Note Controller - Comprehensive Tests", () => {
     });
 
     it("should return notes sorted by creation date (newest first)", async () => {
-      const res = await request(app).get("/api/notes").set("Authorization", `Bearer ${authToken}`);
+      const res = await request(app).get("/server/api/notes").set("Authorization", `Bearer ${authToken}`);
 
       expect(res.status).toBe(200);
       expect(res.body.length).toBe(3);
@@ -184,7 +184,7 @@ describe("Note Controller - Comprehensive Tests", () => {
     });
 
     it("should only return notes belonging to authenticated user", async () => {
-      const res = await request(app).get("/api/notes").set("Authorization", `Bearer ${authToken}`);
+      const res = await request(app).get("/server/api/notes").set("Authorization", `Bearer ${authToken}`);
 
       expect(res.status).toBe(200);
       expect(res.body.length).toBe(3);
@@ -205,7 +205,7 @@ describe("Note Controller - Comprehensive Tests", () => {
       const newUserToken = generateToken((newUser as any)._id);
 
       const res = await request(app)
-        .get("/api/notes")
+        .get("/server/api/notes")
         .set("Authorization", `Bearer ${newUserToken}`);
 
       expect(res.status).toBe(200);
@@ -226,7 +226,7 @@ describe("Note Controller - Comprehensive Tests", () => {
 
     it("should prevent user from accessing other user's note", async () => {
       const res = await request(app)
-        .get(`/api/notes/${testNote._id}`)
+        .get(`/server/api/notes/${testNote._id}`)
         .set("Authorization", `Bearer ${otherUserToken}`);
 
       expect(res.status).toBe(404);
@@ -235,7 +235,7 @@ describe("Note Controller - Comprehensive Tests", () => {
 
     it("should prevent user from updating other user's note", async () => {
       const res = await request(app)
-        .put(`/api/notes/${testNote._id}`)
+        .put(`/server/api/notes/${testNote._id}`)
         .set("Authorization", `Bearer ${otherUserToken}`)
         .send({
           title: "Hacked Title",
@@ -248,7 +248,7 @@ describe("Note Controller - Comprehensive Tests", () => {
 
     it("should prevent user from deleting other user's note", async () => {
       const res = await request(app)
-        .delete(`/api/notes/${testNote._id}`)
+        .delete(`/server/api/notes/${testNote._id}`)
         .set("Authorization", `Bearer ${otherUserToken}`);
 
       expect(res.status).toBe(404);
@@ -269,7 +269,7 @@ describe("Note Controller - Comprehensive Tests", () => {
 
     it("should update only title when content is not provided", async () => {
       const res = await request(app)
-        .put(`/api/notes/${testNote._id}`)
+        .put(`/server/api/notes/${testNote._id}`)
         .set("Authorization", `Bearer ${authToken}`)
         .send({
           title: "Updated Title",
@@ -282,7 +282,7 @@ describe("Note Controller - Comprehensive Tests", () => {
 
     it("should update only content when title is not provided", async () => {
       const res = await request(app)
-        .put(`/api/notes/${testNote._id}`)
+        .put(`/server/api/notes/${testNote._id}`)
         .set("Authorization", `Bearer ${authToken}`)
         .send({
           content: "Updated content",
@@ -295,7 +295,7 @@ describe("Note Controller - Comprehensive Tests", () => {
 
     it("should not update when empty object is sent", async () => {
       const res = await request(app)
-        .put(`/api/notes/${testNote._id}`)
+        .put(`/server/api/notes/${testNote._id}`)
         .set("Authorization", `Bearer ${authToken}`)
         .send({});
 
@@ -311,7 +311,7 @@ describe("Note Controller - Comprehensive Tests", () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       const res = await request(app)
-        .put(`/api/notes/${testNote._id}`)
+        .put(`/server/api/notes/${testNote._id}`)
         .set("Authorization", `Bearer ${authToken}`)
         .send({
           title: "Updated Title",
@@ -325,7 +325,7 @@ describe("Note Controller - Comprehensive Tests", () => {
 
     it("should handle invalid ObjectId format", async () => {
       const res = await request(app)
-        .put("/api/notes/invalid-id")
+        .put("/server/api/notes/invalid-id")
         .set("Authorization", `Bearer ${authToken}`)
         .send({
           title: "Updated Title",
@@ -352,7 +352,7 @@ describe("Note Controller - Comprehensive Tests", () => {
       await Note.findByIdAndDelete(testNote._id);
 
       const res = await request(app)
-        .delete(`/api/notes/${testNote._id}`)
+        .delete(`/server/api/notes/${testNote._id}`)
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(res.status).toBe(404);
@@ -361,7 +361,7 @@ describe("Note Controller - Comprehensive Tests", () => {
 
     it("should handle invalid ObjectId format for deletion", async () => {
       const res = await request(app)
-        .delete("/api/notes/invalid-id")
+        .delete("/server/api/notes/invalid-id")
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(res.status).toBe(400);
@@ -370,7 +370,7 @@ describe("Note Controller - Comprehensive Tests", () => {
 
     it("should verify note is completely removed after deletion", async () => {
       const res = await request(app)
-        .delete(`/api/notes/${testNote._id}`)
+        .delete(`/server/api/notes/${testNote._id}`)
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(res.status).toBe(200);
@@ -390,7 +390,7 @@ describe("Note Controller - Comprehensive Tests", () => {
       });
       Note.find = mockFind as any;
 
-      const res = await request(app).get("/api/notes").set("Authorization", `Bearer ${authToken}`);
+      const res = await request(app).get("/server/api/notes").set("Authorization", `Bearer ${authToken}`);
 
       expect(res.status).toBe(500);
       expect(res.body).toHaveProperty("message", "Database connection failed");
@@ -413,12 +413,12 @@ describe("Note Controller - Comprehensive Tests", () => {
 
     it("should handle concurrent updates to the same note", async () => {
       const update1Promise = request(app)
-        .put(`/api/notes/${testNote._id}`)
+        .put(`/server/api/notes/${testNote._id}`)
         .set("Authorization", `Bearer ${authToken}`)
         .send({ title: "Update 1" });
 
       const update2Promise = request(app)
-        .put(`/api/notes/${testNote._id}`)
+        .put(`/server/api/notes/${testNote._id}`)
         .set("Authorization", `Bearer ${authToken}`)
         .send({ title: "Update 2" });
 
@@ -440,7 +440,7 @@ describe("Note Controller - Comprehensive Tests", () => {
       const htmlContent = "<script>alert('xss')</script><p>Safe content</p>";
 
       const res = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .set("Authorization", `Bearer ${authToken}`)
         .send({
           title: "HTML Test",
@@ -456,7 +456,7 @@ describe("Note Controller - Comprehensive Tests", () => {
         "# Heading\n\n**Bold text** and *italic text*\n\n- List item 1\n- List item 2";
 
       const res = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .set("Authorization", `Bearer ${authToken}`)
         .send({
           title: "Markdown Test",
@@ -471,7 +471,7 @@ describe("Note Controller - Comprehensive Tests", () => {
       const unicodeContent = "Unicode test: 中文 العربية русский 🌟 ñañá";
 
       const res = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .set("Authorization", `Bearer ${authToken}`)
         .send({
           title: "Unicode Test",

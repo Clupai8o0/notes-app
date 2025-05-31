@@ -25,7 +25,7 @@ describe("Integration Tests", () => {
       };
 
       // Register user
-      const registerRes = await request(app).post("/api/auth/register").send(userData);
+      const registerRes = await request(app).post("/server/api/auth/register").send(userData);
 
       expect(registerRes.status).toBe(201);
       expect(registerRes.body).toHaveProperty("token");
@@ -33,14 +33,14 @@ describe("Integration Tests", () => {
 
       // Use registration token to access profile
       const profileRes = await request(app)
-        .get("/api/auth/profile")
+        .get("/server/api/auth/profile")
         .set("Authorization", `Bearer ${registrationToken}`);
 
       expect(profileRes.status).toBe(200);
       expect(profileRes.body.email).toBe(userData.email);
 
       // Login with same credentials
-      const loginRes = await request(app).post("/api/auth/login").send({
+      const loginRes = await request(app).post("/server/api/auth/login").send({
         email: userData.email,
         password: userData.password,
       });
@@ -51,7 +51,7 @@ describe("Integration Tests", () => {
 
       // Use login token to access profile
       const profileRes2 = await request(app)
-        .get("/api/auth/profile")
+        .get("/server/api/auth/profile")
         .set("Authorization", `Bearer ${loginToken}`);
 
       expect(profileRes2.status).toBe(200);
@@ -66,12 +66,12 @@ describe("Integration Tests", () => {
       };
 
       // First registration
-      const firstRes = await request(app).post("/api/auth/register").send(userData);
+      const firstRes = await request(app).post("/server/api/auth/register").send(userData);
 
       expect(firstRes.status).toBe(201);
 
       // Second registration with same email
-      const secondRes = await request(app).post("/api/auth/register").send({
+      const secondRes = await request(app).post("/server/api/auth/register").send({
         name: "Jane Doe",
         email: "john@example.com", // Same email
         password: "differentpassword",
@@ -93,7 +93,7 @@ describe("Integration Tests", () => {
         password: "password123",
       };
 
-      const registerRes = await request(app).post("/api/auth/register").send(userData);
+      const registerRes = await request(app).post("/server/api/auth/register").send(userData);
 
       authToken = registerRes.body.token;
     });
@@ -106,7 +106,7 @@ describe("Integration Tests", () => {
       };
 
       const createRes = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .set("Authorization", `Bearer ${authToken}`)
         .send(noteData);
 
@@ -116,7 +116,7 @@ describe("Integration Tests", () => {
 
       // Read all notes
       const getAllRes = await request(app)
-        .get("/api/notes")
+        .get("/server/api/notes")
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(getAllRes.status).toBe(200);
@@ -125,7 +125,7 @@ describe("Integration Tests", () => {
 
       // Read single note
       const getSingleRes = await request(app)
-        .get(`/api/notes/${noteId}`)
+        .get(`/server/api/notes/${noteId}`)
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(getSingleRes.status).toBe(200);
@@ -139,7 +139,7 @@ describe("Integration Tests", () => {
       };
 
       const updateRes = await request(app)
-        .put(`/api/notes/${noteId}`)
+        .put(`/server/api/notes/${noteId}`)
         .set("Authorization", `Bearer ${authToken}`)
         .send(updateData);
 
@@ -149,7 +149,7 @@ describe("Integration Tests", () => {
 
       // Verify update
       const getUpdatedRes = await request(app)
-        .get(`/api/notes/${noteId}`)
+        .get(`/server/api/notes/${noteId}`)
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(getUpdatedRes.status).toBe(200);
@@ -157,21 +157,21 @@ describe("Integration Tests", () => {
 
       // Delete note
       const deleteRes = await request(app)
-        .delete(`/api/notes/${noteId}`)
+        .delete(`/server/api/notes/${noteId}`)
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(deleteRes.status).toBe(200);
 
       // Verify deletion
       const getDeletedRes = await request(app)
-        .get(`/api/notes/${noteId}`)
+        .get(`/server/api/notes/${noteId}`)
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(getDeletedRes.status).toBe(404);
 
       // Verify empty notes list
       const getFinalRes = await request(app)
-        .get("/api/notes")
+        .get("/server/api/notes")
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(getFinalRes.status).toBe(200);
@@ -189,7 +189,7 @@ describe("Integration Tests", () => {
       const noteIds = [];
       for (const note of notes) {
         const res = await request(app)
-          .post("/api/notes")
+          .post("/server/api/notes")
           .set("Authorization", `Bearer ${authToken}`)
           .send(note);
 
@@ -202,7 +202,7 @@ describe("Integration Tests", () => {
 
       // Get all notes - should be sorted by creation date (newest first)
       const getAllRes = await request(app)
-        .get("/api/notes")
+        .get("/server/api/notes")
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(getAllRes.status).toBe(200);
@@ -221,13 +221,13 @@ describe("Integration Tests", () => {
 
     beforeEach(async () => {
       // Create two users
-      const user1Res = await request(app).post("/api/auth/register").send({
+      const user1Res = await request(app).post("/server/api/auth/register").send({
         name: "User One",
         email: "user1@example.com",
         password: "password123",
       });
 
-      const user2Res = await request(app).post("/api/auth/register").send({
+      const user2Res = await request(app).post("/server/api/auth/register").send({
         name: "User Two",
         email: "user2@example.com",
         password: "password123",
@@ -240,7 +240,7 @@ describe("Integration Tests", () => {
     it("should isolate notes between different users", async () => {
       // User 1 creates notes
       const user1Note = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           title: "User 1 Note",
@@ -251,7 +251,7 @@ describe("Integration Tests", () => {
 
       // User 2 creates notes
       const user2Note = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .set("Authorization", `Bearer ${user2Token}`)
         .send({
           title: "User 2 Note",
@@ -262,7 +262,7 @@ describe("Integration Tests", () => {
 
       // User 1 should only see their own notes
       const user1Notes = await request(app)
-        .get("/api/notes")
+        .get("/server/api/notes")
         .set("Authorization", `Bearer ${user1Token}`);
 
       expect(user1Notes.status).toBe(200);
@@ -271,7 +271,7 @@ describe("Integration Tests", () => {
 
       // User 2 should only see their own notes
       const user2Notes = await request(app)
-        .get("/api/notes")
+        .get("/server/api/notes")
         .set("Authorization", `Bearer ${user2Token}`);
 
       expect(user2Notes.status).toBe(200);
@@ -280,14 +280,14 @@ describe("Integration Tests", () => {
 
       // User 1 cannot access User 2's note
       const user1AccessUser2Note = await request(app)
-        .get(`/api/notes/${user2Note.body._id}`)
+        .get(`/server/api/notes/${user2Note.body._id}`)
         .set("Authorization", `Bearer ${user1Token}`);
 
       expect(user1AccessUser2Note.status).toBe(404);
 
       // User 2 cannot access User 1's note
       const user2AccessUser1Note = await request(app)
-        .get(`/api/notes/${user1Note.body._id}`)
+        .get(`/server/api/notes/${user1Note.body._id}`)
         .set("Authorization", `Bearer ${user2Token}`);
 
       expect(user2AccessUser1Note.status).toBe(404);
@@ -296,7 +296,7 @@ describe("Integration Tests", () => {
     it("should prevent cross-user note modification", async () => {
       // User 1 creates a note
       const user1Note = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           title: "User 1 Note",
@@ -308,7 +308,7 @@ describe("Integration Tests", () => {
 
       // User 2 tries to update User 1's note
       const updateAttempt = await request(app)
-        .put(`/api/notes/${noteId}`)
+        .put(`/server/api/notes/${noteId}`)
         .set("Authorization", `Bearer ${user2Token}`)
         .send({
           title: "Hacked Note",
@@ -319,14 +319,14 @@ describe("Integration Tests", () => {
 
       // User 2 tries to delete User 1's note
       const deleteAttempt = await request(app)
-        .delete(`/api/notes/${noteId}`)
+        .delete(`/server/api/notes/${noteId}`)
         .set("Authorization", `Bearer ${user2Token}`);
 
       expect(deleteAttempt.status).toBe(404);
 
       // Verify note is still intact
       const verifyNote = await request(app)
-        .get(`/api/notes/${noteId}`)
+        .get(`/server/api/notes/${noteId}`)
         .set("Authorization", `Bearer ${user1Token}`);
 
       expect(verifyNote.status).toBe(200);
@@ -343,21 +343,21 @@ describe("Integration Tests", () => {
         password: "password123",
       };
 
-      const registerRes = await request(app).post("/api/auth/register").send(userData);
+      const registerRes = await request(app).post("/server/api/auth/register").send(userData);
 
       expect(registerRes.status).toBe(201);
       const token = registerRes.body.token;
 
       // Normal request should work
       const normalRes = await request(app)
-        .get("/api/auth/profile")
+        .get("/server/api/auth/profile")
         .set("Authorization", `Bearer ${token}`);
 
       expect(normalRes.status).toBe(200);
 
       // Test with invalid token
       const invalidRes = await request(app)
-        .get("/api/auth/profile")
+        .get("/server/api/auth/profile")
         .set("Authorization", "Bearer invalid-token");
 
       expect(invalidRes.status).toBe(401);
@@ -371,43 +371,43 @@ describe("Integration Tests", () => {
         password: "password123",
       };
 
-      const registerRes = await request(app).post("/api/auth/register").send(userData);
+      const registerRes = await request(app).post("/server/api/auth/register").send(userData);
 
       const token = registerRes.body.token;
 
       // Create some notes
-      await request(app).post("/api/notes").set("Authorization", `Bearer ${token}`).send({
+      await request(app).post("/server/api/notes").set("Authorization", `Bearer ${token}`).send({
         title: "Note 1",
         content: "Content 1",
       });
 
-      await request(app).post("/api/notes").set("Authorization", `Bearer ${token}`).send({
+      await request(app).post("/server/api/notes").set("Authorization", `Bearer ${token}`).send({
         title: "Note 2",
         content: "Content 2",
       });
 
       // Verify notes exist
-      const notesRes = await request(app).get("/api/notes").set("Authorization", `Bearer ${token}`);
+      const notesRes = await request(app).get("/server/api/notes").set("Authorization", `Bearer ${token}`);
 
       expect(notesRes.status).toBe(200);
       expect(notesRes.body).toHaveLength(2);
 
       // Delete user
       const deleteRes = await request(app)
-        .delete("/api/auth/delete")
+        .delete("/server/api/auth/delete")
         .set("Authorization", `Bearer ${token}`);
 
       expect(deleteRes.status).toBe(200);
 
       // Verify user cannot access anything with old token
       const profileRes = await request(app)
-        .get("/api/auth/profile")
+        .get("/server/api/auth/profile")
         .set("Authorization", `Bearer ${token}`);
 
       expect(profileRes.status).toBe(401);
 
       const notesAfterDelete = await request(app)
-        .get("/api/notes")
+        .get("/server/api/notes")
         .set("Authorization", `Bearer ${token}`);
 
       expect(notesAfterDelete.status).toBe(401);
@@ -417,7 +417,7 @@ describe("Integration Tests", () => {
   describe("Error Handling", () => {
     it("should handle malformed requests gracefully", async () => {
       // Register user first
-      const registerRes = await request(app).post("/api/auth/register").send({
+      const registerRes = await request(app).post("/server/api/auth/register").send({
         name: "Test User",
         email: "test@example.com",
         password: "password123",
@@ -427,7 +427,7 @@ describe("Integration Tests", () => {
 
       // Test malformed note creation
       const malformedNoteRes = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .set("Authorization", `Bearer ${token}`)
         .send({
           // Missing required fields
@@ -437,7 +437,7 @@ describe("Integration Tests", () => {
 
       // Test invalid note ID
       const invalidIdRes = await request(app)
-        .get("/api/notes/invalid-id")
+        .get("/server/api/notes/invalid-id")
         .set("Authorization", `Bearer ${token}`);
 
       expect(invalidIdRes.status).toBe(400);
@@ -447,7 +447,7 @@ describe("Integration Tests", () => {
       // Test with very large payload
       const largeContent = "A".repeat(1000000); // 1MB of content
 
-      const registerRes = await request(app).post("/api/auth/register").send({
+      const registerRes = await request(app).post("/server/api/auth/register").send({
         name: "Test User",
         email: "test@example.com",
         password: "password123",
@@ -456,7 +456,7 @@ describe("Integration Tests", () => {
       const token = registerRes.body.token;
 
       const largeNoteRes = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .set("Authorization", `Bearer ${token}`)
         .send({
           title: "Large Note",
@@ -471,23 +471,23 @@ describe("Integration Tests", () => {
   describe("Server Endpoints", () => {
     it("should respond to health check endpoints", async () => {
       // Test root endpoint
-      const rootRes = await request(app).get("/");
+      const rootRes = await request(app).get("/server");
       expect(rootRes.status).toBe(200);
       expect(rootRes.body).toHaveProperty("msg", "Hello");
 
       // Test ping endpoint
-      const pingRes = await request(app).get("/ping");
+      const pingRes = await request(app).get("/server/ping");
       expect(pingRes.status).toBe(200);
       expect(pingRes.body).toHaveProperty("msg", "Ping!");
     });
 
     it("should handle non-existent routes", async () => {
-      const notFoundRes = await request(app).get("/non-existent-route");
+      const notFoundRes = await request(app).get("/server/non-existent-route");
       expect(notFoundRes.status).toBe(404);
     });
 
     it("should have metrics endpoint available", async () => {
-      const metricsRes = await request(app).get("/metrics");
+      const metricsRes = await request(app).get("/server/metrics");
       // Metrics endpoint should be available (Prometheus)
       expect([200, 404]).toContain(metricsRes.status);
     });
@@ -496,7 +496,7 @@ describe("Integration Tests", () => {
   describe("CORS and Security", () => {
     it("should handle CORS headers correctly", async () => {
       const res = await request(app)
-        .options("/api/auth/register")
+        .options("/server/api/auth/register")
         .set("Origin", "http://localhost:3000");
 
       // Should handle preflight requests
@@ -510,7 +510,7 @@ describe("Integration Tests", () => {
         password: "password123",
       };
 
-      const res = await request(app).post("/api/auth/register").send(maliciousData);
+      const res = await request(app).post("/server/api/auth/register").send(maliciousData);
 
       // Should either accept it as plain text or reject it
       expect([201, 400]).toContain(res.status);

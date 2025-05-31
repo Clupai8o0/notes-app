@@ -37,10 +37,10 @@ describe("Note Routes", () => {
     await mongoose.connection.close();
   });
 
-  describe("GET /api/notes", () => {
+  describe("GET /server/api/notes", () => {
     it("should get all notes for authenticated user", async () => {
       const response = await request(app)
-        .get("/api/notes")
+        .get("/server/api/notes")
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(response.status).toBe(200);
@@ -51,17 +51,17 @@ describe("Note Routes", () => {
     });
 
     it("should return 401 if not authenticated", async () => {
-      const response = await request(app).get("/api/notes");
+      const response = await request(app).get("/server/api/notes");
 
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty("message");
     });
   });
 
-  describe("GET /api/notes/:id", () => {
+  describe("GET /server/api/notes/:id", () => {
     it("should get a single note by id", async () => {
       const response = await request(app)
-        .get(`/api/notes/${testNote._id}`)
+        .get(`/server/api/notes/${testNote._id}`)
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(response.status).toBe(200);
@@ -74,7 +74,7 @@ describe("Note Routes", () => {
     it("should return 404 if note not found", async () => {
       const fakeId = new mongoose.Types.ObjectId();
       const response = await request(app)
-        .get(`/api/notes/${fakeId}`)
+        .get(`/server/api/notes/${fakeId}`)
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(response.status).toBe(404);
@@ -82,14 +82,14 @@ describe("Note Routes", () => {
     });
 
     it("should return 401 if not authenticated", async () => {
-      const response = await request(app).get(`/api/notes/${testNote._id}`);
+      const response = await request(app).get(`/server/api/notes/${testNote._id}`);
 
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty("message");
     });
   });
 
-  describe("POST /api/notes", () => {
+  describe("POST /server/api/notes", () => {
     it("should create a new note", async () => {
       const newNote = {
         title: "New Test Note",
@@ -97,7 +97,7 @@ describe("Note Routes", () => {
       };
 
       const response = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .set("Authorization", `Bearer ${authToken}`)
         .send(newNote);
 
@@ -110,7 +110,7 @@ describe("Note Routes", () => {
 
     it("should return 400 if title is missing", async () => {
       const response = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .set("Authorization", `Bearer ${authToken}`)
         .send({ content: "Test content" });
 
@@ -120,7 +120,7 @@ describe("Note Routes", () => {
 
     it("should return 401 if not authenticated", async () => {
       const response = await request(app)
-        .post("/api/notes")
+        .post("/server/api/notes")
         .send({ title: "Test", content: "Test" });
 
       expect(response.status).toBe(401);
@@ -128,7 +128,7 @@ describe("Note Routes", () => {
     });
   });
 
-  describe("PUT /api/notes/:id", () => {
+  describe("PUT /server/api/notes/:id", () => {
     it("should update an existing note", async () => {
       const updates = {
         title: "Updated Test Note",
@@ -136,7 +136,7 @@ describe("Note Routes", () => {
       };
 
       const response = await request(app)
-        .put(`/api/notes/${testNote._id}`)
+        .put(`/server/api/notes/${testNote._id}`)
         .set("Authorization", `Bearer ${authToken}`)
         .send(updates);
 
@@ -148,7 +148,7 @@ describe("Note Routes", () => {
     it("should return 404 if note not found", async () => {
       const fakeId = new mongoose.Types.ObjectId();
       const response = await request(app)
-        .put(`/api/notes/${fakeId}`)
+        .put(`/server/api/notes/${fakeId}`)
         .set("Authorization", `Bearer ${authToken}`)
         .send({ title: "Test", content: "Test" });
 
@@ -158,7 +158,7 @@ describe("Note Routes", () => {
 
     it("should return 401 if not authenticated", async () => {
       const response = await request(app)
-        .put(`/api/notes/${testNote._id}`)
+        .put(`/server/api/notes/${testNote._id}`)
         .send({ title: "Test", content: "Test" });
 
       expect(response.status).toBe(401);
@@ -166,10 +166,10 @@ describe("Note Routes", () => {
     });
   });
 
-  describe("DELETE /api/notes/:id", () => {
+  describe("DELETE /server/api/notes/:id", () => {
     it("should delete an existing note", async () => {
       const response = await request(app)
-        .delete(`/api/notes/${testNote._id}`)
+        .delete(`/server/api/notes/${testNote._id}`)
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(response.status).toBe(200);
@@ -183,7 +183,7 @@ describe("Note Routes", () => {
     it("should return 404 if note not found", async () => {
       const fakeId = new mongoose.Types.ObjectId();
       const response = await request(app)
-        .delete(`/api/notes/${fakeId}`)
+        .delete(`/server/api/notes/${fakeId}`)
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(response.status).toBe(404);
@@ -191,7 +191,7 @@ describe("Note Routes", () => {
     });
 
     it("should return 401 if not authenticated", async () => {
-      const response = await request(app).delete(`/api/notes/${testNote._id}`);
+      const response = await request(app).delete(`/server/api/notes/${testNote._id}`);
 
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty("message");

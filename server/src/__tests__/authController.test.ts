@@ -22,7 +22,7 @@ describe("Auth Controller - Comprehensive Tests", () => {
 
   describe("Registration Edge Cases", () => {
     it("should reject registration with missing name", async () => {
-      const res = await request(app).post("/api/auth/register").send({
+      const res = await request(app).post("/server/api/auth/register").send({
         email: "test@example.com",
         password: "password123",
       });
@@ -32,7 +32,7 @@ describe("Auth Controller - Comprehensive Tests", () => {
     });
 
     it("should reject registration with missing email", async () => {
-      const res = await request(app).post("/api/auth/register").send({
+      const res = await request(app).post("/server/api/auth/register").send({
         name: "Test User",
         password: "password123",
       });
@@ -42,7 +42,7 @@ describe("Auth Controller - Comprehensive Tests", () => {
     });
 
     it("should reject registration with missing password", async () => {
-      const res = await request(app).post("/api/auth/register").send({
+      const res = await request(app).post("/server/api/auth/register").send({
         name: "Test User",
         email: "test@example.com",
       });
@@ -52,7 +52,7 @@ describe("Auth Controller - Comprehensive Tests", () => {
     });
 
     it("should reject registration with short password", async () => {
-      const res = await request(app).post("/api/auth/register").send({
+      const res = await request(app).post("/server/api/auth/register").send({
         name: "John Doe",
         email: "john@example.com",
         password: "123",
@@ -63,7 +63,7 @@ describe("Auth Controller - Comprehensive Tests", () => {
     });
 
     it("should normalize email to lowercase", async () => {
-      const res = await request(app).post("/api/auth/register").send({
+      const res = await request(app).post("/server/api/auth/register").send({
         name: "John Doe",
         email: "JOHN@EXAMPLE.COM",
         password: "password123",
@@ -74,7 +74,7 @@ describe("Auth Controller - Comprehensive Tests", () => {
     });
 
     it("should trim whitespace from name and email", async () => {
-      const res = await request(app).post("/api/auth/register").send({
+      const res = await request(app).post("/server/api/auth/register").send({
         name: "  Test User  ",
         email: "  test@example.com  ",
         password: "password123",
@@ -94,11 +94,11 @@ describe("Auth Controller - Comprehensive Tests", () => {
     };
 
     beforeEach(async () => {
-      await request(app).post("/api/auth/register").send(testUser);
+      await request(app).post("/server/api/auth/register").send(testUser);
     });
 
     it("should reject login with non-existent email", async () => {
-      const res = await request(app).post("/api/auth/login").send({
+      const res = await request(app).post("/server/api/auth/login").send({
         email: "nonexistent@example.com",
         password: "password123",
       });
@@ -108,7 +108,7 @@ describe("Auth Controller - Comprehensive Tests", () => {
     });
 
     it("should handle case-insensitive email login", async () => {
-      const res = await request(app).post("/api/auth/login").send({
+      const res = await request(app).post("/server/api/auth/login").send({
         email: "TEST@EXAMPLE.COM",
         password: "password123",
       });
@@ -121,7 +121,7 @@ describe("Auth Controller - Comprehensive Tests", () => {
       const originalEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = "production";
 
-      const res = await request(app).post("/api/auth/login").send({
+      const res = await request(app).post("/server/api/auth/login").send({
         email: testUser.email,
         password: testUser.password,
       });
@@ -138,7 +138,7 @@ describe("Auth Controller - Comprehensive Tests", () => {
     let userId: string;
 
     beforeEach(async () => {
-      const registerRes = await request(app).post("/api/auth/register").send({
+      const registerRes = await request(app).post("/server/api/auth/register").send({
         name: "Test User",
         email: "test@example.com",
         password: "password123",
@@ -153,7 +153,7 @@ describe("Auth Controller - Comprehensive Tests", () => {
       await User.findByIdAndDelete(userId);
 
       const res = await request(app)
-        .get("/api/auth/profile")
+        .get("/server/api/auth/profile")
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(res.status).toBe(401);
@@ -162,7 +162,7 @@ describe("Auth Controller - Comprehensive Tests", () => {
 
     it("should handle malformed JWT token", async () => {
       const res = await request(app)
-        .get("/api/auth/profile")
+        .get("/server/api/auth/profile")
         .set("Authorization", "Bearer malformed.jwt.token");
 
       expect(res.status).toBe(401);
@@ -176,7 +176,7 @@ describe("Auth Controller - Comprehensive Tests", () => {
       });
 
       const res = await request(app)
-        .get("/api/auth/profile")
+        .get("/server/api/auth/profile")
         .set("Authorization", `Bearer ${expiredToken}`);
 
       expect(res.status).toBe(401);
@@ -184,7 +184,7 @@ describe("Auth Controller - Comprehensive Tests", () => {
     });
 
     it("should handle token without Bearer prefix", async () => {
-      const res = await request(app).get("/api/auth/profile").set("Authorization", authToken);
+      const res = await request(app).get("/server/api/auth/profile").set("Authorization", authToken);
 
       expect(res.status).toBe(401);
       expect(res.body).toHaveProperty(
@@ -199,7 +199,7 @@ describe("Auth Controller - Comprehensive Tests", () => {
     let userId: string;
 
     beforeEach(async () => {
-      const registerRes = await request(app).post("/api/auth/register").send({
+      const registerRes = await request(app).post("/server/api/auth/register").send({
         name: "Test User",
         email: "test@example.com",
         password: "password123",
@@ -211,11 +211,11 @@ describe("Auth Controller - Comprehensive Tests", () => {
 
     it("should handle deletion of already deleted user", async () => {
       // Delete the user first
-      await request(app).delete("/api/auth/delete").set("Authorization", `Bearer ${authToken}`);
+      await request(app).delete("/server/api/auth/delete").set("Authorization", `Bearer ${authToken}`);
 
       // Try to delete again
       const res = await request(app)
-        .delete("/api/auth/delete")
+        .delete("/server/api/auth/delete")
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(res.status).toBe(401);
@@ -224,7 +224,7 @@ describe("Auth Controller - Comprehensive Tests", () => {
 
     it("should verify user data is completely removed after deletion", async () => {
       const res = await request(app)
-        .delete("/api/auth/delete")
+        .delete("/server/api/auth/delete")
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(res.status).toBe(200);
@@ -240,7 +240,7 @@ describe("Auth Controller - Comprehensive Tests", () => {
       const originalSecret = process.env.JWT_SECRET;
       delete process.env.JWT_SECRET;
 
-      const res = await request(app).post("/api/auth/register").send({
+      const res = await request(app).post("/server/api/auth/register").send({
         name: "Test User",
         email: "test@example.com",
         password: "password123",
