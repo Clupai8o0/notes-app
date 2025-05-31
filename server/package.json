@@ -1,6 +1,6 @@
 {
   "name": "notes-app-server",
-  "version": "1.0.6",
+  "version": "1.0.15",
   "description": "A simple note taking app server running mongodb and express",
   "main": "index.js",
   "scripts": {
