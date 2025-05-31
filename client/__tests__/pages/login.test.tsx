@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { act } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import LoginPage from '@/app/auth/login/page';
 
@@ -104,7 +105,10 @@ describe('Login Page', () => {
 
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith('/api/auth/login', {
@@ -129,7 +133,10 @@ describe('Login Page', () => {
 
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(mockPush).toHaveBeenCalledWith('/');
@@ -148,7 +155,10 @@ describe('Login Page', () => {
 
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(mockPush).toHaveBeenCalledWith('/notes/new');
@@ -171,15 +181,20 @@ describe('Login Page', () => {
 
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       expect(screen.getByText(/signing in.../i)).toBeInTheDocument();
       expect(submitButton).toBeDisabled();
 
       // Resolve the promise to finish the test
-      resolvePromise!({
-        ok: true,
-        json: () => Promise.resolve({ token: 'fake-jwt-token' }),
+      await act(async () => {
+        resolvePromise!({
+          ok: true,
+          json: () => Promise.resolve({ token: 'fake-jwt-token' }),
+        });
       });
     });
   });
@@ -199,7 +214,10 @@ describe('Login Page', () => {
 
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'wrongpassword' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Invalid credentials')).toBeInTheDocument();
@@ -220,7 +238,10 @@ describe('Login Page', () => {
 
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Login failed')).toBeInTheDocument();
@@ -238,7 +259,10 @@ describe('Login Page', () => {
 
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Network error')).toBeInTheDocument();
@@ -265,7 +289,10 @@ describe('Login Page', () => {
       // First submission with error
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'wrongpassword' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Invalid credentials')).toBeInTheDocument();
@@ -273,7 +300,10 @@ describe('Login Page', () => {
 
       // Second submission should clear error
       fireEvent.change(passwordInput, { target: { value: 'correctpassword' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(screen.queryByText('Invalid credentials')).not.toBeInTheDocument();
@@ -294,7 +324,10 @@ describe('Login Page', () => {
 
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'wrongpassword' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Invalid credentials')).toBeInTheDocument();
@@ -342,14 +375,19 @@ describe('Login Page', () => {
 
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       expect(screen.getByRole('button', { name: /signing in.../i })).toBeInTheDocument();
 
       // Resolve the promise
-      resolvePromise!({
-        ok: true,
-        json: () => Promise.resolve({ token: 'fake-jwt-token' }),
+      await act(async () => {
+        resolvePromise!({
+          ok: true,
+          json: () => Promise.resolve({ token: 'fake-jwt-token' }),
+        });
       });
     });
   });

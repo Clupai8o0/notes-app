@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { act } from 'react';
 import { useRouter } from 'next/navigation';
 import NewNotePage from '@/app/notes/new/page';
 
@@ -116,7 +117,10 @@ describe('New Note Page', () => {
 
       fireEvent.change(titleInput, { target: { value: 'Test Title' } });
       fireEvent.change(contentInput, { target: { value: 'Test Content' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith('/api/notes', {
@@ -142,7 +146,10 @@ describe('New Note Page', () => {
 
       fireEvent.change(titleInput, { target: { value: 'Test Title' } });
       fireEvent.change(contentInput, { target: { value: 'Test Content' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(mockPush).toHaveBeenCalledWith('/');
@@ -167,7 +174,10 @@ describe('New Note Page', () => {
 
       fireEvent.change(titleInput, { target: { value: 'Test Title' } });
       fireEvent.change(contentInput, { target: { value: 'Test Content' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       expect(screen.getByText(/creating.../i)).toBeInTheDocument();
       expect(submitButton).toBeDisabled();
@@ -176,9 +186,11 @@ describe('New Note Page', () => {
       expect(contentInput).toBeDisabled();
 
       // Resolve the promise to finish the test
-      resolvePromise!({
-        ok: true,
-        json: () => Promise.resolve({ id: 'new-note-id' }),
+      await act(async () => {
+        resolvePromise!({
+          ok: true,
+          json: () => Promise.resolve({ id: 'new-note-id' }),
+        });
       });
     });
   });
@@ -198,7 +210,10 @@ describe('New Note Page', () => {
 
       fireEvent.change(titleInput, { target: { value: 'Test Title' } });
       fireEvent.change(contentInput, { target: { value: 'Test Content' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Failed to create note')).toBeInTheDocument();
@@ -219,7 +234,10 @@ describe('New Note Page', () => {
 
       fireEvent.change(titleInput, { target: { value: 'Test Title' } });
       fireEvent.change(contentInput, { target: { value: 'Test Content' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Failed to create note')).toBeInTheDocument();
@@ -237,7 +255,10 @@ describe('New Note Page', () => {
 
       fireEvent.change(titleInput, { target: { value: 'Test Title' } });
       fireEvent.change(contentInput, { target: { value: 'Test Content' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Network error')).toBeInTheDocument();
@@ -264,7 +285,10 @@ describe('New Note Page', () => {
       // First submission with error
       fireEvent.change(titleInput, { target: { value: 'Test Title' } });
       fireEvent.change(contentInput, { target: { value: 'Test Content' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Failed to create note')).toBeInTheDocument();
@@ -272,7 +296,10 @@ describe('New Note Page', () => {
 
       // Second submission should clear error
       fireEvent.change(titleInput, { target: { value: 'Updated Title' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(screen.queryByText('Failed to create note')).not.toBeInTheDocument();
@@ -294,7 +321,10 @@ describe('New Note Page', () => {
 
       fireEvent.change(titleInput, { target: { value: 'Test Title' } });
       fireEvent.change(contentInput, { target: { value: 'Test Content' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Failed to create note')).toBeInTheDocument();
@@ -342,14 +372,19 @@ describe('New Note Page', () => {
 
       fireEvent.change(titleInput, { target: { value: 'Test Title' } });
       fireEvent.change(contentInput, { target: { value: 'Test Content' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       expect(cancelButton).toBeDisabled();
 
       // Resolve the promise
-      resolvePromise!({
-        ok: true,
-        json: () => Promise.resolve({ id: 'new-note-id' }),
+      await act(async () => {
+        resolvePromise!({
+          ok: true,
+          json: () => Promise.resolve({ id: 'new-note-id' }),
+        });
       });
     });
   });
@@ -413,16 +448,21 @@ describe('New Note Page', () => {
 
       fireEvent.change(titleInput, { target: { value: 'Test Title' } });
       fireEvent.change(contentInput, { target: { value: 'Test Content' } });
-      fireEvent.click(submitButton);
+      
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       // Form should be disabled during submission
       expect(titleInput).toBeDisabled();
       expect(contentInput).toBeDisabled();
 
       // Resolve the promise
-      resolvePromise!({
-        ok: true,
-        json: () => Promise.resolve({ id: 'new-note-id' }),
+      await act(async () => {
+        resolvePromise!({
+          ok: true,
+          json: () => Promise.resolve({ id: 'new-note-id' }),
+        });
       });
     });
   });
