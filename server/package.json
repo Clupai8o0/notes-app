@@ -28,7 +28,7 @@
     "express": "^5.1.0",
     "express-prometheus-middleware": "^1.2.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.14.2"
+    "mongoose": "^8.15.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.18",
